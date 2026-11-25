@@ -13,6 +13,8 @@ type Props = {
   contentContainerStyle?: ScrollViewProps['contentContainerStyle'];
   /** Reserva espacio inferior para la tab bar flotante. */
   bottomInset?: boolean;
+  /** Barra superior fija (full-bleed) fuera del scroll. */
+  header?: React.ReactNode;
 };
 
 /**
@@ -26,37 +28,39 @@ export function Screen({
   style,
   contentContainerStyle,
   bottomInset = true,
+  header,
 }: Props) {
   const insets = useSafeAreaInsets();
   const paddingBottom = (bottomInset ? insets.bottom + 76 : insets.bottom) + Spacing.lg;
   const horizontal = bleed ? 0 : Spacing.gutter;
+  const top = header ? Spacing.lg : insets.top + Spacing.lg;
 
   if (!scroll) {
     return (
-      <View
-        style={[
-          styles.root,
-          { paddingTop: insets.top, paddingHorizontal: horizontal, paddingBottom },
-          style,
-        ]}
-      >
-        {children}
+      <View style={[styles.root, style]}>
+        {header}
+        <View style={{ flex: 1, paddingTop: header ? Spacing.lg : insets.top, paddingHorizontal: horizontal, paddingBottom }}>
+          {children}
+        </View>
       </View>
     );
   }
 
   return (
-    <ScrollView
-      style={[styles.root, style]}
-      contentContainerStyle={[
-        { paddingTop: insets.top + Spacing.lg, paddingHorizontal: horizontal, paddingBottom },
-        contentContainerStyle,
-      ]}
-      keyboardShouldPersistTaps="handled"
-      showsVerticalScrollIndicator={false}
-    >
-      {children}
-    </ScrollView>
+    <View style={[styles.root, style]}>
+      {header}
+      <ScrollView
+        style={styles.root}
+        contentContainerStyle={[
+          { paddingTop: top, paddingHorizontal: horizontal, paddingBottom },
+          contentContainerStyle,
+        ]}
+        keyboardShouldPersistTaps="handled"
+        showsVerticalScrollIndicator={false}
+      >
+        {children}
+      </ScrollView>
+    </View>
   );
 }
 

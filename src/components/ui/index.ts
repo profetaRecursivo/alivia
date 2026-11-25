@@ -1,4 +1,5 @@
 export { Screen } from './Screen';
+export { AppHeader } from './AppHeader';
 export { ScreenHeader } from './ScreenHeader';
 export { Card } from './Card';
 export { Badge } from './Badge';

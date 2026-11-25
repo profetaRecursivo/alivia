@@ -4,11 +4,17 @@ import { CheckCircle2, X } from 'lucide-react-native';
 import { Colors, Radius, Shadows, Spacing, Typography } from '@/constants/theme';
 import { Button } from './Button';
 
+type SummaryItem = { label: string; value: string };
+
 type Props = {
   title: string;
   message: string;
   /** Línea destacada opcional (p. ej. "10 comprimidos · Bs. 145.00"). */
   detail?: string;
+  /** Resumen en dos columnas (cantidad / total). */
+  summary?: SummaryItem[];
+  /** Nota al pie (stock restante, motivo). */
+  note?: string;
   primaryLabel: string;
   onPrimary: () => void;
   secondaryLabel?: string;
@@ -26,6 +32,8 @@ export function SuccessDialog({
   title,
   message,
   detail,
+  summary,
+  note,
   primaryLabel,
   onPrimary,
   secondaryLabel,
@@ -54,6 +62,19 @@ export function SuccessDialog({
         <Text style={styles.title}>{title}</Text>
         <Text style={styles.message}>{message}</Text>
         {detail ? <Text style={styles.detail}>{detail}</Text> : null}
+
+        {summary && summary.length > 0 ? (
+          <View style={styles.summary}>
+            {summary.map((item) => (
+              <View key={item.label} style={styles.summaryColumn}>
+                <Text style={styles.summaryLabel}>{item.label}</Text>
+                <Text style={styles.summaryValue}>{item.value}</Text>
+              </View>
+            ))}
+          </View>
+        ) : null}
+
+        {note ? <Text style={styles.note}>{note}</Text> : null}
 
         <View style={styles.actions}>
           <Button label={primaryLabel} onPress={onPrimary} variant="primary" />
@@ -111,6 +132,37 @@ const styles = StyleSheet.create({
     fontSize: Typography.scale.price,
     fontFamily: Typography.fontFamilySemiBold,
     color: Colors.text,
+    textAlign: 'center',
+    marginTop: Spacing.sm,
+  },
+  summary: {
+    alignSelf: 'stretch',
+    flexDirection: 'row',
+    backgroundColor: Colors.field,
+    borderRadius: Radius.lg,
+    paddingVertical: Spacing.md,
+    paddingHorizontal: Spacing.sm,
+    marginTop: Spacing.lg,
+    gap: Spacing.sm,
+  },
+  summaryColumn: { flex: 1, alignItems: 'center', gap: Spacing.one },
+  summaryLabel: {
+    fontSize: Typography.scale.label,
+    fontFamily: Typography.fontFamilySemiBold,
+    color: Colors.textSecondary,
+    letterSpacing: 0.4,
+    textAlign: 'center',
+  },
+  summaryValue: {
+    fontSize: Typography.scale.brand,
+    fontFamily: Typography.fontFamilyBold,
+    color: Colors.text,
+    textAlign: 'center',
+  },
+  note: {
+    fontSize: Typography.scale.metadata,
+    fontFamily: Typography.fontFamilyMedium,
+    color: Colors.textSecondary,
     textAlign: 'center',
     marginTop: Spacing.sm,
   },
