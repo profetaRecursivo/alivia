@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet, FlatList } from 'react-native';
 import { Colors, Typography, Spacing } from '@/constants/theme';
+import { ScreenHeader } from '@/components/ui';
 import { ArrowDownRight, ArrowUpRight, AlertTriangle } from 'lucide-react-native';
 
 // INTEGRANTE 6: Historial de Movimientos y Auditoría
@@ -14,8 +15,11 @@ export default function HistorialScreen() {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.title}>Historial</Text>
-        <Text style={styles.subtitle}>Registro de movimientos de inventario</Text>
+        <ScreenHeader
+          title="Historial"
+          subtitle="Registro de movimientos de inventario"
+          back
+        />
       </View>
 
       <FlatList

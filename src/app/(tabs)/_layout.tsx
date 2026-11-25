@@ -1,8 +1,13 @@
 import React from 'react';
 import { Tabs } from 'expo-router';
-import { AlertTriangle, Calendar, Package, History } from 'lucide-react-native';
-import { Colors } from '@/constants/theme';
+import { AlertTriangle, Package } from 'lucide-react-native';
+import { Colors, Typography } from '@/constants/theme';
 
+/**
+ * Navegación oficial de Alivia (Figma + Ley de Jakob):
+ * SOLO 2 pestañas → Vencimientos y Stock.
+ * Historial, Por Vencer, Detalle, Venta y Descarte son pantallas apiladas.
+ */
 export default function TabLayout() {
   const theme = Colors.light;
 
@@ -13,7 +18,7 @@ export default function TabLayout() {
         tabBarActiveTintColor: theme.primary,
         tabBarInactiveTintColor: theme.textTertiary,
         tabBarStyle: {
-          backgroundColor: '#FFFFFF',
+          backgroundColor: theme.surface,
           borderTopColor: theme.border,
           borderTopWidth: 1,
           height: 60,
@@ -21,10 +26,11 @@ export default function TabLayout() {
           paddingTop: 6,
         },
         tabBarLabelStyle: {
-          fontFamily: 'PlusJakartaSans_600SemiBold',
-          fontSize: 11,
+          fontFamily: Typography.fontFamilySemiBold,
+          fontSize: Typography.scale.label,
         },
-      }}>
+      }}
+    >
       <Tabs.Screen
         name="index"
         options={{
@@ -33,24 +39,10 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="por-vencer"
-        options={{
-          title: 'Por Vencer',
-          tabBarIcon: ({ color, size }) => <Calendar size={size} color={color} />,
-        }}
-      />
-      <Tabs.Screen
         name="stock"
         options={{
           title: 'Stock',
           tabBarIcon: ({ color, size }) => <Package size={size} color={color} />,
-        }}
-      />
-      <Tabs.Screen
-        name="historial"
-        options={{
-          title: 'Historial',
-          tabBarIcon: ({ color, size }) => <History size={size} color={color} />,
         }}
       />
     </Tabs>

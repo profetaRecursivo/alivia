@@ -47,6 +47,30 @@ La arquitectura de Alivia ya está resuelta con una solución profesional de la 
 
 ---
 
+## 🧭 2.1 NAVEGACIÓN OFICIAL: SOLO 2 PESTAÑAS
+
+> [!IMPORTANT]
+> El repositorio ya quedó alineado a Figma. **No agreguen pestañas nuevas.**
+
+| Nivel | Ruta | Archivo |
+|---|---|---|
+| Pestaña 1 | Vencimientos (Dashboard) | `src/app/(tabs)/index.tsx` |
+| Pantalla apilada | Por Vencer (15/30/60 días) | `src/app/por-vencer.tsx` |
+| Pestaña 2 | Stock | `src/app/(tabs)/stock.tsx` |
+| Pantalla apilada | Historial | `src/app/historial.tsx` |
+| Pantalla apilada | Configuración | `src/app/configuracion.tsx` |
+| Pantalla apilada | Detalle del producto | `src/app/detalle/[id].tsx` |
+| BottomSheet | Registrar venta | `src/app/venta/[id].tsx` |
+| BottomSheet | Descartar | `src/app/descartar/[id].tsx` |
+| Popup | Venta exitosa | `src/app/venta-exitosa.tsx` |
+| Popup | Descarte exitoso | `src/app/descarte-exitoso.tsx` |
+
+- "Ver alertas" del Dashboard abre **Por Vencer**.
+- "Ver historial completo de productos retirados" abre **Historial**.
+- Los BottomSheets son modales transparentes: se dibuja solo la tarjeta + scrim, nunca la pantalla de fondo.
+
+---
+
 ## 🎨 3. TOKENS DE DISEÑO OFICIALES (COLORES Y TIPOGRAFÍA)
 
 No inventen colores hexadecimales ni tipografías. En el archivo `src/constants/theme.ts` ya están registrados todos los tokens oficiales extraídos de Figma:
@@ -55,11 +79,11 @@ No inventen colores hexadecimales ni tipografías. En el archivo `src/constants/
 - **Color Primario de Marca:** `#1B5E7B` (Deep Slate Teal — botones principales, tabs activas, cabeceras).
 - **Semáforo Semántico de Vencimientos:**
   - 🔴 **Crítico (≤ 15 días o Vencido):** Texto `#B91C1C` | Fondo `#FEE2E2` | Borde `#EF4444`
-  - 🟡 **Atención (≤ 30 días):** Texto `#D97706` | Fondo `#FEF3C7` | Borde `#F59E0B`
-  - 🟢 **Control Clínico (≤ 60 días):** Texto `#0D9488` | Fondo `#CCFBF1` | Borde `#14B8A6`
+  - 🟡 **Atención (≤ 30 días):** Texto `#E65100` | Fondo `#FEF3C7` | Borde `#F59E0B`
+  - 🔵 **Control Clínico (≤ 60 días):** Texto `#0369A1` | Fondo `#E0F2FE` | Borde `#7DD3FC`
   - ❇️ **Éxito / Stock al Día:** Texto `#166534` | Fondo `#DCFCE7` | Borde `#22C55E`
 - **Superficies y Neutros:**
-  - Fondo general (Canvas): `#F8FAFC`
+  - Fondo general (Canvas): `#F7F9FB`
   - Tarjetas y Modales (Surface): `#FFFFFF`
   - Texto Principal (Títulos, cifras): `#0F172A`
   - Texto Secundario (Lotes, fechas): `#64748B`
@@ -128,7 +152,7 @@ npm start
 
 ### 👤 INTEGRANTE 2: VENCIMIENTOS Y MONITOREO TEMPORAL
 * **Rama Git:** `feature/integrante2-por-vencer`
-* **Archivo asignado:** `src/app/(tabs)/por-vencer.tsx`
+* **Archivo asignado:** `src/app/por-vencer.tsx`
 
 #### 🖥️ Tus 4 Pantallas en Figma:
 1. **`PorVencer (Color)`** (Pestaña crítica 15 días activa):
@@ -183,7 +207,7 @@ npm start
 
 ### 👤 INTEGRANTE 4: OPERACIONES DE VENTA Y DESCARTE (BOTTOMSHEETS)
 * **Rama Git:** `feature/integrante4-operaciones-venta`
-* **Archivos asignados:** `src/app/venta/[id].tsx` y `src/app/descartar/[id].tsx`
+* **Archivos asignados:** `src/app/venta/[id].tsx`, `src/app/descartar/[id].tsx`, `src/app/venta-exitosa.tsx` y `src/app/descarte-exitoso.tsx`
 
 #### 🖥️ Tus 4 Pantallas en Figma:
 1. **`Registrar venta bottomsheet (Color)`**:
@@ -199,15 +223,16 @@ npm start
 3. **`Registrar Venta - Cantidad Cero (Alivia) (Color)`**:
    - Si la cantidad está en `0`:
    - Botón de confirmación desactivado (`opacity: 0.5`) y mensaje: `La cantidad debe ser mayor a 0`.
-4. **`Descartar BottomSheet (Color)`**:
+4. **`Descartar BottomSheet (Color)`** (en Figma aparece rotulado por error como *Registrar Venta - Cantidad No Válida*):
    - ⚠️ *Ignorar la pantalla de fondo.*
    - Formulario de baja por merma o vencimiento.
-   - **Selector de Motivo Obligatorio:** Radio buttons con opciones:
-     - 🔘 *Producto Vencido*
-     - 🔘 *Empaque dañado / Frasco roto*
-     - 🔘 *Pérdida de cadena de frío*
-     - 🔘 *Otro motivo*
-   - Botón rojo de peligro: `Confirmar Descarte` (`#DC2626`).
+   - **Selector de motivo obligatorio con CHIPS** (no radio buttons): `Vencido`, `Dañado`, `Devolución a droguería`.
+   - Mientras no haya motivo y una cantidad válida, el CTA `Confirmar descarte` queda **deshabilitado en gris** (no rojo).
+5. **`Venta Exitosa (Color)`** *(popup nuevo)* y **`Descarte Exitoso (Color)`** *(popup nuevo)*:
+   - Diálogo centrado sobre scrim, NO una pantalla completa.
+   - Ícono de check verde + título 20 px + mensaje de 1 línea con lo que cambió en el stock.
+   - CTA primario `Volver a vencimientos` y enlace secundario `Ver historial`.
+   - Se implementan con el primitivo compartido `SuccessDialog` (`src/components/ui`).
 
 ---
 
@@ -239,7 +264,7 @@ npm start
 
 ### 👤 INTEGRANTE 6: HISTORIAL, AUDITORÍA Y BAJAS
 * **Rama Git:** `feature/integrante6-historial-bajas`
-* **Archivo asignado:** `src/app/(tabs)/historial.tsx`
+* **Archivo asignado:** `src/app/historial.tsx`
 
 #### 🖥️ Tus 4 Pantallas en Figma:
 1. **`Historial (Color)`** (Movimientos registrados):
@@ -255,8 +280,10 @@ npm start
    - Ícono de reloj/historial y texto: *"No hay movimientos registrados en este rango de fechas"*.
 4. **`Descartar BottomSheet - Sin Motivo (Alivia) (Color)`**:
    - Validación de seguridad: Si se presiona *Confirmar Descarte* sin haber marcado un motivo:
-   - Los radio buttons se marcan con borde rojo `#EF4444`.
+   - Los chips de motivo se marcan con borde rojo `#EF4444`.
    - Mensaje de alerta: `Debes seleccionar obligatoriamente un motivo para auditar la baja`.
+5. **`Descarte Exitoso (Color)`** *(popup nuevo)*:
+   - Confirmación posterior al descarte. Ver la especificación compartida en el bloque del Integrante 4.
 
 ---
 

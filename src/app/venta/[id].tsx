@@ -1,390 +1,291 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import {
-  View,
-  Text,
+  KeyboardAvoidingView,
+  Platform,
   StyleSheet,
-  TouchableOpacity,
+  Text,
   TextInput,
-  ScrollView,
-  Alert,
+  TouchableOpacity,
+  View,
 } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { X, Check, ShoppingCart, Minus, Plus, AlertCircle } from 'lucide-react-native';
-import { Colors, Spacing } from '@/constants/theme';
+import { Minus, Plus, Clock3 } from 'lucide-react-native';
+import { Colors, Radius, Spacing, Typography } from '@/constants/theme';
+import { Badge, Button, ConfirmDialog, Sheet } from '@/components/ui';
+
+// INTEGRANTE 4: Registrar venta (BottomSheet) + Confirmar venta + Venta exitosa.
+// Fuente visual: Figma 291:19 (sheet), 291:160 (cantidad no válida), 498:360 (confirmar).
+
+const PRODUCTO = {
+  nombre: 'Ibuprofeno 400 mg',
+  presentacion: 'Comprimidos caja',
+  lote: 'IB-449',
+  stock: 200,
+  precioUnitario: 1.5,
+  diasParaVencer: 15,
+};
 
 export default function RegistrarVentaScreen() {
   const router = useRouter();
   const { id } = useLocalSearchParams<{ id: string }>();
+  void id;
 
-  // Mock de datos del producto y lote recomendado FEFO
-  const productoMock = {
-    id: id || '1',
-    name: 'Ibuprofeno 400mg',
-    form: 'Tabletas',
-    loteRecomendado: {
-      id: 'lote-101',
-      code: 'L-2024-001',
-      stock: 35,
-      expires_at: '2026-11-28',
-      daysUntil: 5,
-    },
-    totalStock: 85,
+  const [cantidad, setCantidad] = useState(10);
+  const [texto, setTexto] = useState('10');
+  const [confirmando, setConfirmando] = useState(false);
+
+  const error = useMemo(() => {
+    if (cantidad <= 0) return 'La cantidad debe ser mayor a 0.';
+    if (cantidad > PRODUCTO.stock)
+      return `Ingresa un número entre 1 y ${PRODUCTO.stock} comprimidos disponibles en el estante.`;
+    return null;
+  }, [cantidad]);
+
+  const total = cantidad * PRODUCTO.precioUnitario;
+  const totalFmt = total.toFixed(2);
+  const restante = Math.max(PRODUCTO.stock - cantidad, 0);
+
+  const aplicar = (n: number) => {
+    const limpio = Number.isFinite(n) ? Math.trunc(n) : 0;
+    setCantidad(limpio);
+    setTexto(String(limpio));
   };
 
-  const [quantity, setQuantity] = useState(1);
-  const [notes, setNotes] = useState('');
-  const [submitting, setSubmitting] = useState(false);
-
-  const maxStock = productoMock.loteRecomendado.stock;
-
-  const handleIncrement = () => {
-    if (quantity < maxStock) {
-      setQuantity((prev) => prev + 1);
-    }
+  const onChangeTexto = (valor: string) => {
+    const soloDigitos = valor.replace(/[^0-9]/g, '');
+    setTexto(soloDigitos);
+    setCantidad(soloDigitos === '' ? 0 : parseInt(soloDigitos, 10));
   };
 
-  const handleDecrement = () => {
-    if (quantity > 1) {
-      setQuantity((prev) => prev - 1);
-    }
-  };
-
-  const handleSaveVenta = async () => {
-    if (quantity <= 0) {
-      Alert.alert('Error', 'La cantidad vendida debe ser mayor a 0');
-      return;
-    }
-    if (quantity > maxStock) {
-      Alert.alert('Error', `Stock insuficiente en lote FEFO (Máx. ${maxStock})`);
-      return;
-    }
-
-    setSubmitting(true);
-    // Simular registro en base de datos local y sincronización
-    setTimeout(() => {
-      setSubmitting(false);
-      Alert.alert(
-        'Venta registrada',
-        `Se descontaron ${quantity} unidades del lote ${productoMock.loteRecomendado.code} (Criterio FEFO aplicado).`,
-        [{ text: 'Aceptar', onPress: () => router.back() }]
-      );
-    }, 600);
+  const registrar = () => {
+    setConfirmando(false);
+    router.replace({
+      pathname: '/venta-exitosa',
+      params: {
+        nombre: PRODUCTO.nombre,
+        cantidad: String(cantidad),
+        total: totalFmt,
+      },
+    });
   };
 
   return (
-    <SafeAreaView style={styles.safeArea}>
-      <View style={styles.header}>
-        <View style={styles.headerLeft}>
-          <ShoppingCart size={22} color={Colors.light.primary} />
-          <Text style={styles.headerTitle}>Registrar Venta</Text>
-        </View>
-        <TouchableOpacity
-          style={styles.closeButton}
-          onPress={() => router.back()}
-          hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
-          <X size={20} color={Colors.light.textSecondary} />
-        </TouchableOpacity>
-      </View>
-
-      <ScrollView contentContainerStyle={styles.content}>
-        {/* Banner de Producto */}
-        <View style={styles.productBanner}>
-          <Text style={styles.productName}>{productoMock.name}</Text>
-          <Text style={styles.productForm}>{productoMock.form}</Text>
-        </View>
-
-        {/* Lote asignado por FEFO */}
-        <View style={styles.fefoCard}>
-          <View style={styles.fefoBadge}>
-            <Text style={styles.fefoBadgeText}>REGLA FEFO ACTIVA</Text>
+    <View style={styles.overlay}>
+      <TouchableOpacity
+        style={StyleSheet.absoluteFill}
+        activeOpacity={1}
+        onPress={() => router.back()}
+        accessibilityLabel="Cerrar"
+      />
+      <KeyboardAvoidingView
+        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+        style={styles.keyboard}
+      >
+        <Sheet
+          title="Registrar venta"
+          subtitle="Revisa y marca según lo que vendas o retires en el mostrador"
+          footer={
+            <>
+              <Button
+                label={`Confirmar venta (${cantidad} ${cantidad === 1 ? 'comprimido' : 'comprimidos'})`}
+                onPress={() => setConfirmando(true)}
+                variant={error ? 'disabled' : 'primary'}
+                disabled={!!error}
+              />
+              <Button
+                label="Cancelar y mantener en lista"
+                onPress={() => router.back()}
+                variant="ghost"
+              />
+            </>
+          }
+        >
+          {/* Ficha del lote */}
+          <View style={styles.producto}>
+            <View style={styles.productoTop}>
+              <View style={styles.productoInfo}>
+                <Text style={styles.productoNombre}>{PRODUCTO.nombre}</Text>
+                <Text style={styles.productoMeta}>
+                  Lote {PRODUCTO.lote} · {PRODUCTO.presentacion}
+                </Text>
+              </View>
+              <Badge label={`Vence en ${PRODUCTO.diasParaVencer} días`} tone="critical" />
+            </View>
+            <View style={styles.disponibleRow}>
+              <Clock3 size={14} color={Colors.textSecondary} />
+              <Text style={styles.disponible}>
+                Disponible: {PRODUCTO.stock} comprimidos
+              </Text>
+            </View>
           </View>
-          <Text style={styles.fefoTitle}>Lote asignado para salida prioritaria:</Text>
-          <Text style={styles.fefoLoteCode}>{productoMock.loteRecomendado.code}</Text>
-          <Text style={styles.fefoInfo}>
-            Vence: {productoMock.loteRecomendado.expires_at} ({productoMock.loteRecomendado.daysUntil} días restantes)
-          </Text>
-          <Text style={styles.fefoStock}>
-            Stock disponible en este lote: <Text style={{ fontWeight: '700' }}>{maxStock} uds.</Text>
-          </Text>
-        </View>
 
-        {/* Stepper de Cantidad */}
-        <View style={styles.stepperContainer}>
-          <Text style={styles.stepperLabel}>Cantidad a vender</Text>
+          {/* Stepper */}
+          <Text style={styles.label}>CANTIDAD A VENDER</Text>
           <View style={styles.stepperRow}>
             <TouchableOpacity
-              style={[styles.stepperBtn, quantity <= 1 && styles.stepperBtnDisabled]}
-              onPress={handleDecrement}
-              disabled={quantity <= 1}>
-              <Minus size={22} color={quantity <= 1 ? '#94A3B8' : Colors.light.primary} />
+              style={[styles.stepBtn, cantidad <= 1 && styles.stepBtnDisabled]}
+              onPress={() => aplicar(cantidad - 1)}
+              disabled={cantidad <= 1}
+              accessibilityLabel="Restar uno"
+            >
+              <Minus size={22} color={cantidad <= 1 ? Colors.textDisabled : Colors.primary} />
             </TouchableOpacity>
 
-            <View style={styles.quantityBox}>
-              <Text style={styles.quantityValue}>{quantity}</Text>
+            <View style={[styles.inputWrap, !!error && styles.inputWrapError]}>
+              <TextInput
+                value={texto}
+                onChangeText={onChangeTexto}
+                keyboardType="number-pad"
+                maxLength={4}
+                style={styles.input}
+                selectTextOnFocus
+                accessibilityLabel="Cantidad a vender"
+              />
+              <Text style={styles.inputUnit}>Comprimidos</Text>
             </View>
 
             <TouchableOpacity
-              style={[styles.stepperBtn, quantity >= maxStock && styles.stepperBtnDisabled]}
-              onPress={handleIncrement}
-              disabled={quantity >= maxStock}>
-              <Plus size={22} color={quantity >= maxStock ? '#94A3B8' : Colors.light.primary} />
+              style={[styles.stepBtn, cantidad >= PRODUCTO.stock && styles.stepBtnDisabled]}
+              onPress={() => aplicar(cantidad + 1)}
+              disabled={cantidad >= PRODUCTO.stock}
+              accessibilityLabel="Sumar uno"
+            >
+              <Plus
+                size={22}
+                color={cantidad >= PRODUCTO.stock ? Colors.textDisabled : Colors.primary}
+              />
             </TouchableOpacity>
           </View>
-          {quantity >= maxStock && (
-            <View style={styles.warningRow}>
-              <AlertCircle size={14} color="#D97706" />
-              <Text style={styles.warningText}>Cantidad máxima alcanzada para este lote</Text>
-            </View>
-          )}
-        </View>
 
-        {/* Notas u observaciones */}
-        <View style={styles.notesContainer}>
-          <Text style={styles.notesLabel}>Observación (Opcional)</Text>
-          <TextInput
-            style={styles.notesInput}
-            placeholder="Ej. Venta en mostrador con receta médica"
-            placeholderTextColor="#94A3B8"
-            value={notes}
-            onChangeText={setNotes}
-            multiline
-            numberOfLines={2}
-          />
-        </View>
-      </ScrollView>
+          {error ? <Text style={styles.error}>{error}</Text> : null}
 
-      {/* Botones de acción */}
-      <View style={styles.footer}>
-        <TouchableOpacity
-          style={styles.cancelButton}
-          onPress={() => router.back()}
-          disabled={submitting}>
-          <Text style={styles.cancelButtonText}>Cancelar</Text>
-        </TouchableOpacity>
+          <View style={styles.totalRow}>
+            <Text style={styles.totalLabel}>Importe calculado</Text>
+            <Text style={styles.totalValue}>Bs. {totalFmt}</Text>
+          </View>
+        </Sheet>
+      </KeyboardAvoidingView>
 
-        <TouchableOpacity
-          style={[styles.confirmButton, submitting && styles.confirmButtonDisabled]}
-          onPress={handleSaveVenta}
-          disabled={submitting}>
-          <Check size={18} color="#FFFFFF" style={{ marginRight: 6 }} />
-          <Text style={styles.confirmButtonText}>
-            {submitting ? 'Guardando...' : `Confirmar Venta (${quantity})`}
-          </Text>
-        </TouchableOpacity>
-      </View>
-    </SafeAreaView>
+      {confirmando ? (
+        <ConfirmDialog
+          title="¿Confirmar venta?"
+          subtitle="Se actualizará el stock de mostrador en tiempo real"
+          rows={[
+            { label: 'Cantidad a despachar', value: `${cantidad} comprimidos` },
+            { label: 'Importe calculado', value: `Bs. ${totalFmt}`, emphasis: true },
+            { label: 'Quedarán en estante', value: `${restante} comprimidos` },
+          ]}
+          primaryLabel="Sí, registrar venta"
+          onPrimary={registrar}
+          secondaryLabel="Volver a editar cantidad"
+          onSecondary={() => setConfirmando(false)}
+        />
+      ) : null}
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  safeArea: {
-    flex: 1,
-    backgroundColor: '#FFFFFF',
-  },
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingHorizontal: Spacing.four,
-    paddingVertical: 14,
-    borderBottomWidth: 1,
-    borderBottomColor: Colors.light.border,
-  },
-  headerLeft: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-  },
-  headerTitle: {
-    fontFamily: 'PlusJakartaSans_700Bold',
-    fontSize: 18,
-    color: Colors.light.text,
-  },
-  closeButton: {
-    padding: 6,
-    borderRadius: 8,
-    backgroundColor: '#F1F5F9',
-  },
-  content: {
-    padding: Spacing.four,
-  },
-  productBanner: {
-    backgroundColor: '#F8FAFC',
-    borderRadius: 12,
-    padding: 16,
+  overlay: { flex: 1, justifyContent: 'flex-end', backgroundColor: Colors.scrim },
+  keyboard: { justifyContent: 'flex-end' },
+
+  producto: {
+    backgroundColor: Colors.surfaceMuted,
+    borderRadius: Radius.lg,
     borderWidth: 1,
-    borderColor: '#E2E8F0',
-    marginBottom: 16,
+    borderColor: Colors.border,
+    padding: Spacing.md,
+    gap: Spacing.sm,
   },
-  productName: {
-    fontFamily: 'PlusJakartaSans_700Bold',
-    fontSize: 18,
-    color: Colors.light.text,
+  productoTop: { flexDirection: 'row', alignItems: 'flex-start', gap: Spacing.sm },
+  productoInfo: { flex: 1 },
+  productoNombre: {
+    fontSize: Typography.scale.h2,
+    fontFamily: Typography.fontFamilySemiBold,
+    color: Colors.text,
   },
-  productForm: {
-    fontFamily: 'PlusJakartaSans_500Medium',
-    fontSize: 14,
-    color: Colors.light.textSecondary,
+  productoMeta: {
+    fontSize: Typography.scale.metadata,
+    fontFamily: Typography.fontFamilyRegular,
+    color: Colors.textSecondary,
     marginTop: 2,
   },
-  fefoCard: {
-    backgroundColor: '#F0FDF4',
-    borderColor: '#86EFAC',
-    borderWidth: 1,
-    borderRadius: 12,
-    padding: 14,
-    marginBottom: 20,
+  disponibleRow: { flexDirection: 'row', alignItems: 'center', gap: Spacing.xs },
+  disponible: {
+    fontSize: Typography.scale.metadata,
+    fontFamily: Typography.fontFamilyMedium,
+    color: Colors.textSecondary,
   },
-  fefoBadge: {
-    alignSelf: 'flex-start',
-    backgroundColor: '#DCFCE7',
-    paddingHorizontal: 8,
-    paddingVertical: 2,
-    borderRadius: 4,
-    marginBottom: 6,
-  },
-  fefoBadgeText: {
-    fontFamily: 'PlusJakartaSans_700Bold',
-    fontSize: 10,
-    color: '#15803D',
-  },
-  fefoTitle: {
-    fontFamily: 'PlusJakartaSans_500Medium',
-    fontSize: 12,
-    color: '#166534',
-  },
-  fefoLoteCode: {
-    fontFamily: 'PlusJakartaSans_700Bold',
-    fontSize: 16,
-    color: '#14532D',
-    marginTop: 2,
-  },
-  fefoInfo: {
-    fontFamily: 'PlusJakartaSans_500Medium',
-    fontSize: 13,
-    color: '#166534',
-    marginTop: 2,
-  },
-  fefoStock: {
-    fontFamily: 'PlusJakartaSans_400Regular',
-    fontSize: 13,
-    color: '#166534',
-    marginTop: 6,
-  },
-  stepperContainer: {
-    alignItems: 'center',
-    marginVertical: 12,
-  },
-  stepperLabel: {
-    fontFamily: 'PlusJakartaSans_600SemiBold',
-    fontSize: 15,
-    color: Colors.light.text,
-    marginBottom: 12,
+
+  label: {
+    fontSize: Typography.scale.label,
+    fontFamily: Typography.fontFamilySemiBold,
+    color: Colors.textSecondary,
+    letterSpacing: 0.6,
   },
   stepperRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 16,
+    justifyContent: 'center',
+    gap: Spacing.md,
   },
-  stepperBtn: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
-    backgroundColor: '#F0F9FA',
+  stepBtn: {
+    width: Spacing.touchTarget,
+    height: Spacing.touchTarget,
+    borderRadius: Radius.pill,
     borderWidth: 1,
-    borderColor: Colors.light.primary,
+    borderColor: Colors.borderStrong,
+    backgroundColor: Colors.surface,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  stepperBtnDisabled: {
-    borderColor: '#CBD5E1',
-    backgroundColor: '#F1F5F9',
-  },
-  quantityBox: {
-    minWidth: 70,
-    height: 48,
-    backgroundColor: '#F8FAFC',
-    borderWidth: 1,
-    borderColor: '#CBD5E1',
-    borderRadius: 10,
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingHorizontal: 16,
-  },
-  quantityValue: {
-    fontFamily: 'PlusJakartaSans_700Bold',
-    fontSize: 22,
-    color: Colors.light.text,
-  },
-  warningRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 6,
-    marginTop: 8,
-  },
-  warningText: {
-    fontFamily: 'PlusJakartaSans_500Medium',
-    fontSize: 12,
-    color: '#D97706',
-  },
-  notesContainer: {
-    marginTop: 16,
-  },
-  notesLabel: {
-    fontFamily: 'PlusJakartaSans_600SemiBold',
-    fontSize: 14,
-    color: Colors.light.text,
-    marginBottom: 6,
-  },
-  notesInput: {
-    fontFamily: 'PlusJakartaSans_400Regular',
-    fontSize: 14,
-    backgroundColor: '#F8FAFC',
-    borderWidth: 1,
-    borderColor: Colors.light.border,
-    borderRadius: 10,
-    padding: 12,
-    color: Colors.light.text,
-    textAlignVertical: 'top',
-  },
-  footer: {
-    flexDirection: 'row',
-    padding: Spacing.four,
-    borderTopWidth: 1,
-    borderTopColor: Colors.light.border,
-    gap: 12,
-  },
-  cancelButton: {
+  stepBtnDisabled: { backgroundColor: Colors.field, borderColor: Colors.field },
+  inputWrap: {
     flex: 1,
-    paddingVertical: 14,
-    borderRadius: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
     borderWidth: 1,
-    borderColor: Colors.light.border,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: '#FFFFFF',
+    borderColor: Colors.borderStrong,
+    borderRadius: Radius.lg,
+    backgroundColor: Colors.surface,
+    paddingVertical: Spacing.sm,
   },
-  cancelButtonText: {
-    fontFamily: 'PlusJakartaSans_600SemiBold',
-    fontSize: 15,
-    color: Colors.light.textSecondary,
+  inputWrapError: { borderColor: Colors.critical.border, backgroundColor: Colors.critical.bg },
+  input: {
+    minWidth: 96,
+    textAlign: 'center',
+    fontSize: Typography.scale.hero,
+    fontFamily: Typography.fontFamilyBold,
+    color: Colors.text,
+    padding: 0,
   },
-  confirmButton: {
-    flex: 2,
+  inputUnit: {
+    fontSize: Typography.scale.micro,
+    fontFamily: Typography.fontFamilyMedium,
+    color: Colors.textSecondary,
+    textTransform: 'uppercase',
+  },
+  error: {
+    fontSize: Typography.scale.metadata,
+    fontFamily: Typography.fontFamilyMedium,
+    color: Colors.critical.text,
+  },
+  totalRow: {
     flexDirection: 'row',
-    paddingVertical: 14,
-    borderRadius: 10,
-    backgroundColor: Colors.light.primary,
+    justifyContent: 'space-between',
     alignItems: 'center',
-    justifyContent: 'center',
+    borderTopWidth: 1,
+    borderTopColor: Colors.border,
+    paddingTop: Spacing.md,
   },
-  confirmButtonDisabled: {
-    opacity: 0.6,
+  totalLabel: {
+    fontSize: Typography.scale.body,
+    fontFamily: Typography.fontFamilyRegular,
+    color: Colors.textSecondary,
   },
-  confirmButtonText: {
-    fontFamily: 'PlusJakartaSans_700Bold',
-    fontSize: 15,
-    color: '#FFFFFF',
+  totalValue: {
+    fontSize: Typography.scale.price,
+    fontFamily: Typography.fontFamilyBold,
+    color: Colors.text,
   },
 });

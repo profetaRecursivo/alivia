@@ -1,14 +1,13 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Colors, Typography, Spacing } from '@/constants/theme';
-import { supabase } from '@/lib/supabase';
-import { AlertCircle, Clock, PackageCheck, Settings } from 'lucide-react-native';
+import { AlertCircle, Clock, Settings } from 'lucide-react-native';
 
 // INTEGRANTE 1: Dashboard y métricas generales
 export default function DashboardScreen() {
   const router = useRouter();
-  const [stats, setStats] = useState({ expired: 3, critical: 12, monitored: 148 });
+  const [stats] = useState({ expired: 3, critical: 12, monitored: 148 });
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.content}>
@@ -60,7 +59,7 @@ export default function DashboardScreen() {
       {/* Botón Principal: Ver Alertas */}
       <TouchableOpacity 
         style={styles.primaryButton}
-        onPress={() => router.push('/(tabs)/por-vencer')}
+        onPress={() => router.push('/por-vencer')}
       >
         <Text style={styles.primaryButtonText}>Ver alertas →</Text>
         <Text style={styles.primaryButtonSub}>Presiona para abrir los 12 productos prioritarios</Text>

@@ -2,7 +2,7 @@ import React from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { Colors, Typography, Spacing } from '@/constants/theme';
-import { ArrowLeft, AlertOctagon, Check } from 'lucide-react-native';
+import { ArrowLeft, AlertOctagon } from 'lucide-react-native';
 
 // INTEGRANTE 3: Ficha Detalle del Producto (Decisión Rápida y Bloqueo de Vencidos)
 export default function DetalleProductoScreen() {
@@ -73,7 +73,7 @@ export default function DetalleProductoScreen() {
         <TouchableOpacity 
           style={[styles.btnSell, isExpired && styles.btnDisabled]}
           disabled={isExpired}
-          onPress={() => router.push('/venta')}
+          onPress={() => router.push(`/venta/${id}`)}
         >
           <Text style={[styles.btnSellText, isExpired && styles.btnDisabledText]}>
             {isExpired ? '✕ Venta Bloqueada (Vencido)' : '✓ Vender este lote'}
@@ -82,7 +82,7 @@ export default function DetalleProductoScreen() {
 
         <TouchableOpacity 
           style={styles.btnDiscard}
-          onPress={() => router.push('/descartar')}
+          onPress={() => router.push(`/descartar/${id}`)}
         >
           <Text style={styles.btnDiscardText}>Descartar de estante</Text>
         </TouchableOpacity>

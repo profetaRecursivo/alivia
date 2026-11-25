@@ -17,7 +17,7 @@ SplashScreen.preventAutoHideAsync();
 const queryClient = new QueryClient();
 
 export default function RootLayout() {
-  const [fontsLoaded] = useFonts({
+  const [fontsLoaded, fontError] = useFonts({
     PlusJakartaSans_400Regular,
     PlusJakartaSans_500Medium,
     PlusJakartaSans_600SemiBold,
@@ -30,12 +30,13 @@ export default function RootLayout() {
   }, []);
 
   useEffect(() => {
-    if (fontsLoaded) {
-      SplashScreen.hideAsync();
+    // Si la fuente falla, igual mostramos la app (evita quedarse en el splash).
+    if (fontsLoaded || fontError) {
+      SplashScreen.hideAsync().catch(() => {});
     }
-  }, [fontsLoaded]);
+  }, [fontsLoaded, fontError]);
 
-  if (!fontsLoaded) {
+  if (!fontsLoaded && !fontError) {
     return null;
   }
 
@@ -44,6 +45,20 @@ export default function RootLayout() {
       <StatusBar style="dark" />
       <Stack screenOptions={{ headerShown: false }}>
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+        <Stack.Screen
+          name="por-vencer"
+          options={{
+            headerShown: false,
+            presentation: 'card',
+          }}
+        />
+        <Stack.Screen
+          name="historial"
+          options={{
+            headerShown: false,
+            presentation: 'card',
+          }}
+        />
         <Stack.Screen
           name="detalle/[id]"
           options={{
@@ -62,14 +77,34 @@ export default function RootLayout() {
           name="venta/[id]"
           options={{
             headerShown: false,
-            presentation: 'modal',
+            presentation: 'transparentModal',
+            animation: 'slide_from_bottom',
+            gestureEnabled: true,
           }}
         />
         <Stack.Screen
           name="descartar/[id]"
           options={{
             headerShown: false,
-            presentation: 'modal',
+            presentation: 'transparentModal',
+            animation: 'slide_from_bottom',
+            gestureEnabled: true,
+          }}
+        />
+        <Stack.Screen
+          name="venta-exitosa"
+          options={{
+            headerShown: false,
+            presentation: 'transparentModal',
+            animation: 'fade',
+          }}
+        />
+        <Stack.Screen
+          name="descarte-exitoso"
+          options={{
+            headerShown: false,
+            presentation: 'transparentModal',
+            animation: 'fade',
           }}
         />
       </Stack>

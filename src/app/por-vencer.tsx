@@ -2,7 +2,8 @@ import React, { useState } from 'react';
 import { View, Text, StyleSheet, FlatList, TouchableOpacity } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Colors, Typography, Spacing } from '@/constants/theme';
-import { Check, X, Undo2 } from 'lucide-react-native';
+import { ScreenHeader } from '@/components/ui';
+import { Check, X } from 'lucide-react-native';
 
 // INTEGRANTE 2: Listado de Vencimientos con pestañas 15d, 30d y 60d
 export default function PorVencerScreen() {
@@ -21,8 +22,11 @@ export default function PorVencerScreen() {
     <View style={styles.container}>
       {/* Encabezado */}
       <View style={styles.header}>
-        <Text style={styles.title}>Por Vencer</Text>
-        <Text style={styles.subtitle}>Revisa y marca según lo que vendas o descartes</Text>
+        <ScreenHeader
+          title="Por Vencer"
+          subtitle="Revisa y marca según lo que vendas o descartes"
+          back
+        />
       </View>
 
       {/* Tabs Temporales */}
@@ -55,6 +59,16 @@ export default function PorVencerScreen() {
         data={items}
         keyExtractor={(item) => item.id}
         contentContainerStyle={styles.list}
+        ListFooterComponent={
+          <TouchableOpacity
+            style={styles.historyLink}
+            onPress={() => router.push('/historial')}
+          >
+            <Text style={styles.historyLinkText}>
+              ↺ Ver historial completo de productos retirados
+            </Text>
+          </TouchableOpacity>
+        }
         renderItem={({ item }) => (
           <TouchableOpacity 
             style={styles.card}
@@ -78,7 +92,7 @@ export default function PorVencerScreen() {
             <View style={styles.actionsRow}>
               <TouchableOpacity 
                 style={styles.btnSell}
-                onPress={() => router.push('/venta')}
+                onPress={() => router.push(`/venta/${item.id}`)}
               >
                 <Check size={16} color="#FFFFFF" />
                 <Text style={styles.btnSellText}>Vender</Text>
@@ -86,7 +100,7 @@ export default function PorVencerScreen() {
 
               <TouchableOpacity 
                 style={styles.btnDiscard}
-                onPress={() => router.push('/descartar')}
+                onPress={() => router.push(`/descartar/${item.id}`)}
               >
                 <X size={16} color={Colors.textSecondary} />
                 <Text style={styles.btnDiscardText}>Descartar</Text>
@@ -153,4 +167,10 @@ const styles = StyleSheet.create({
   },
   undoText: { color: '#FFFFFF', fontSize: 13 },
   undoAction: { color: '#38BDF8', fontSize: 13, fontFamily: Typography.fontFamilyBold },
+  historyLink: { alignItems: 'center', paddingVertical: Spacing.lg },
+  historyLinkText: {
+    fontSize: Typography.scale.metadata,
+    fontFamily: Typography.fontFamilyMedium,
+    color: Colors.primary,
+  },
 });
