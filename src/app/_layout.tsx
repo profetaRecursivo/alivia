@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
 import { Stack } from 'expo-router';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
 import {
@@ -11,6 +12,8 @@ import {
 } from '@expo-google-fonts/plus-jakarta-sans';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { initLocalDb } from '@/lib/sqlite';
+// Arranca hidratación, outbox y watcher de sync aunque la pantalla aún no use hooks.
+import '@/lib/repository';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -41,8 +44,9 @@ export default function RootLayout() {
   }
 
   return (
-    <QueryClientProvider client={queryClient}>
-      <StatusBar style="dark" />
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <QueryClientProvider client={queryClient}>
+        <StatusBar style="dark" />
       <Stack screenOptions={{ headerShown: false }}>
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         <Stack.Screen
@@ -78,7 +82,7 @@ export default function RootLayout() {
           options={{
             headerShown: false,
             presentation: 'transparentModal',
-            animation: 'slide_from_bottom',
+            animation: 'fade',
             gestureEnabled: true,
           }}
         />
@@ -87,7 +91,7 @@ export default function RootLayout() {
           options={{
             headerShown: false,
             presentation: 'transparentModal',
-            animation: 'slide_from_bottom',
+            animation: 'fade',
             gestureEnabled: true,
           }}
         />
@@ -107,7 +111,8 @@ export default function RootLayout() {
             animation: 'fade',
           }}
         />
-      </Stack>
-    </QueryClientProvider>
+        </Stack>
+      </QueryClientProvider>
+    </GestureHandlerRootView>
   );
 }

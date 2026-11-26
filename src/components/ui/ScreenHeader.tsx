@@ -35,7 +35,7 @@ export function ScreenHeader({ title, subtitle, back = false, onBack, right }: P
           </TouchableOpacity>
         ) : null}
         <View style={styles.titleBlock}>
-          <Text style={styles.title} numberOfLines={1}>
+          <Text style={styles.title} numberOfLines={1} accessibilityRole="header">
             {title}
           </Text>
           {subtitle ? <Text style={styles.subtitle}>{subtitle}</Text> : null}

@@ -32,15 +32,16 @@ export function ConfirmDialog({
   onClose,
 }: Props) {
   return (
-    <View style={styles.overlay}>
+    <View style={styles.overlay} accessibilityViewIsModal>
       <TouchableOpacity
         style={StyleSheet.absoluteFill}
         activeOpacity={1}
         onPress={onClose ?? onSecondary}
-        accessibilityLabel="Cerrar"
+        accessible={false}
+        importantForAccessibility="no"
       />
       <View style={styles.card}>
-        <Text style={styles.title}>{title}</Text>
+        <Text style={styles.title} accessibilityRole="header">{title}</Text>
         {subtitle ? <Text style={styles.subtitle}>{subtitle}</Text> : null}
 
         {rows.length > 0 ? (

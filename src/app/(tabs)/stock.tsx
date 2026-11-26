@@ -10,9 +10,9 @@ export default function StockScreen() {
   const [search, setSearch] = useState('');
 
   const stockItems = [
-    { id: '1', name: 'Amoxicilina 500 mg', desc: 'Suspensión oral 60ml · Lab. IFA', stock: '12 frascos · Estante C · N2', price: 'Bs. 14.50', days: 18, lote: 'AMX-08' },
-    { id: '2', name: 'Amoxicilina + Ác. Clavulánico', desc: 'Comprimidos 875/125 mg · Lab. Bagó', stock: '60 comprimidos · Estante C · N1', price: 'Bs. 4.00', days: 92, lote: 'AMX-14' },
-    { id: '3', name: 'Amoxicilina 250 mg / 5ml', desc: 'Jarabe pediátrico 100ml · Lab. IFA', stock: '8 frascos · Estante B · N3', price: 'Bs. 18.00', days: 140, lote: 'AMX-22' },
+    { id: 'amx-08', name: 'Amoxicilina 500 mg', desc: 'Suspensión oral 60ml · Lab. IFA', stock: '12 frascos · Estante C · N2', price: 'Bs. 14.50', days: 18, lote: 'AMX-08' },
+    { id: 'amx-14', name: 'Amoxicilina + Ác. Clavulánico', desc: 'Comprimidos 875/125 mg · Lab. Bagó', stock: '60 comprimidos · Estante C · N1', price: 'Bs. 4.00', days: 92, lote: 'AMX-14' },
+    { id: 'amx-22', name: 'Amoxicilina 250 mg / 5ml', desc: 'Jarabe pediátrico 100ml · Lab. IFA', stock: '8 frascos · Estante B · N3', price: 'Bs. 18.00', days: 140, lote: 'AMX-22' },
   ];
 
   return (

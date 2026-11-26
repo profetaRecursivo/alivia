@@ -10,14 +10,21 @@ import * as SQLite from 'expo-sqlite';
  */
 const DB_NAME = 'alivia_local_v2.db';
 
-let dbInstance: SQLite.SQLiteDatabase | null = null;
+let dbPromise: Promise<SQLite.SQLiteDatabase> | null = null;
 
 export async function getLocalDatabase() {
-  if (!dbInstance) {
-    dbInstance = await SQLite.openDatabaseAsync(DB_NAME);
-    await initLocalTables(dbInstance);
+  if (!dbPromise) {
+    dbPromise = (async () => {
+      const db = await SQLite.openDatabaseAsync(DB_NAME);
+      await initLocalTables(db);
+      return db;
+    })().catch((error) => {
+      // Si falla la apertura, permitir un reintento en la próxima llamada.
+      dbPromise = null;
+      throw error;
+    });
   }
-  return dbInstance;
+  return dbPromise;
 }
 
 export const initLocalDb = getLocalDatabase;

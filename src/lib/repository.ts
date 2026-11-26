@@ -11,6 +11,7 @@ import {
   reasonLabel,
 } from './demo-data';
 import { daysUntil, normalizeSearch } from './format';
+import { notifyLocalChange, startSyncWatcher } from './sync';
 
 /**
  * Repositorio único de la app.
@@ -85,9 +86,42 @@ export function useLots(): Lot[] {
 export function useLot(id: string | undefined): Lot | undefined {
   return useSyncExternalStore(
     subscribe,
-    () => (id ? state.lots.find((lot) => lot.id === id) : undefined),
-    () => (id ? state.lots.find((lot) => lot.id === id) : undefined)
+    () => resolveLot(id),
+    () => resolveLot(id)
   );
+}
+
+/**
+ * Resuelve el parámetro de ruta contra el dataset canónico.
+ *
+ * Las pantallas nuevas pasan el id local (`ib-449`), pero las viejas todavía
+ * pasan índices (`1`, `2`, `3`) o el código de lote (`IB-449`). Aceptar los
+ * tres formatos evita "Lote no encontrado" durante la migración.
+ */
+function resolveLot(id: string | undefined): Lot | undefined {
+  if (!id) return undefined;
+  const value = String(id);
+
+  const exact = state.lots.find((lot) => lot.id === value);
+  if (exact) return exact;
+
+  const byCode = state.lots.find(
+    (lot) => lot.lot.toLowerCase() === value.toLowerCase()
+  );
+  if (byCode) return byCode;
+
+  const byName = state.lots.find(
+    (lot) => normalizeSearch(lot.name) === normalizeSearch(value)
+  );
+  if (byName) return byName;
+
+  const numeric = Number(value);
+  if (Number.isInteger(numeric) && numeric >= 1 && numeric <= DEMO_LOTS.length) {
+    const fallbackId = DEMO_LOTS[numeric - 1].id;
+    return state.lots.find((lot) => lot.id === fallbackId);
+  }
+
+  return undefined;
 }
 
 export function useMovements(): Movement[] {
@@ -148,6 +182,7 @@ export async function sellBatch(id: string, quantity: number): Promise<void> {
   const resultingStock = previousStock - quantity;
   const movementId = nextId('mv');
   const saleId = nextId('sale');
+  const saleNumber = `V-${sequence}`;
   const now = new Date().toISOString();
 
   const movement: Movement = {
@@ -184,7 +219,7 @@ export async function sellBatch(id: string, quantity: number): Promise<void> {
     ]);
     await db.runAsync(
       'INSERT INTO sales (id, pharmacy_id, user_id, sale_number, total_amount, status, sale_date, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
-      [saleId, null, null, `V-${sequence}`, total, 'COMPLETED', now, now]
+      [saleId, null, null, saleNumber, total, 'COMPLETED', now, now]
     );
     await db.runAsync(
       'INSERT INTO sale_items (id, sale_id, batch_id, quantity, unit_price, subtotal) VALUES (?, ?, ?, ?, ?, ?)',
@@ -194,8 +229,26 @@ export async function sellBatch(id: string, quantity: number): Promise<void> {
       'INSERT INTO inventory_movements (id, batch_id, movement_type, quantity, previous_stock, resulting_stock, reason, movement_date) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
       [movementId, lot.id, 'SALE', quantity, previousStock, resultingStock, null, now]
     );
-    await enqueue(db, 'SALE', 'sale', { saleId, batchId: lot.id, quantity, total }, now);
+    await enqueue(
+      db,
+      'SALE',
+      'sale',
+      {
+        saleId,
+        batchId: lot.id,
+        quantity,
+        total,
+        unitPrice: lot.price,
+        saleNumber,
+        saleDate: now,
+        movementId,
+        previousStock,
+        resultingStock,
+      },
+      now
+    );
   });
+  notifyLocalChange();
 }
 
 export async function discardBatch(
@@ -255,8 +308,24 @@ export async function discardBatch(
       'INSERT INTO inventory_movements (id, batch_id, movement_type, quantity, previous_stock, resulting_stock, reason, movement_date) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
       [movementId, lot.id, 'DISCARD', quantity, previousStock, resultingStock, label, now]
     );
-    await enqueue(db, 'DISCARD', 'discard', { discardId, batchId: lot.id, quantity, reason }, now);
+    await enqueue(
+      db,
+      'DISCARD',
+      'discard',
+      {
+        discardId,
+        batchId: lot.id,
+        quantity,
+        reason,
+        discardDate: now,
+        movementId,
+        previousStock,
+        resultingStock,
+      },
+      now
+    );
   });
+  notifyLocalChange();
 }
 
 /** Revierte la última venta/descarte si pasaron ≤ 5 s. */
@@ -275,7 +344,7 @@ export function undoLast(): boolean {
   undoEntry = null;
   emit({ lots, movements });
 
-  void persistUndo(entry);
+  void persistUndo(entry).finally(() => notifyLocalChange());
   return true;
 }
 
@@ -322,6 +391,20 @@ async function persistUndo(entry: UndoEntry) {
         await db.runAsync('DELETE FROM discards WHERE id = ?', [entry.discardId]);
       }
     });
+
+    // Si la operación todavía no se empujó, se cancela también en el outbox.
+    // El sync espera 5 s, así que dentro de la ventana de undo sigue PENDING.
+    // Va fuera de la transacción: si falla, el undo local ya quedó bien.
+    try {
+      await db.runAsync(
+        `DELETE FROM sync_outbox
+          WHERE status = 'PENDING'
+            AND (json_extract(payload, '$.saleId') = ? OR json_extract(payload, '$.discardId') = ?)`,
+        [entry.saleId ?? '', entry.discardId ?? '']
+      );
+    } catch {
+      // El sync lo reintentará; no se revierte el undo local.
+    }
   } catch {
     // La UI ya revirtió el estado; si SQLite falla, se reconcilia al reabrir.
   }
@@ -506,5 +589,6 @@ function locationId(lot: Lot): string {
   return `loc-${slug(lot.shelf)}`;
 }
 
-// Arranca la hidratación apenas se importa el repositorio.
+// Arranca la hidratación y el motor de sync apenas se importa el repositorio.
 void ensureRepositoryReady();
+startSyncWatcher();

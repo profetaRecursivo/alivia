@@ -41,16 +41,23 @@ export function SuccessDialog({
   onClose,
 }: Props) {
   return (
-    <View style={styles.overlay}>
+    <View style={styles.overlay} accessibilityViewIsModal>
       <TouchableOpacity
         style={StyleSheet.absoluteFill}
         activeOpacity={1}
         onPress={onClose}
-        accessibilityLabel="Cerrar"
+        accessible={false}
+        importantForAccessibility="no"
       />
       <View style={styles.card}>
         {onClose ? (
-          <TouchableOpacity style={styles.close} onPress={onClose} hitSlop={8}>
+          <TouchableOpacity
+            style={styles.close}
+            onPress={onClose}
+            hitSlop={8}
+            accessibilityRole="button"
+            accessibilityLabel="Cerrar"
+          >
             <X size={20} color={Colors.textTertiary} />
           </TouchableOpacity>
         ) : null}
@@ -59,7 +66,7 @@ export function SuccessDialog({
           <CheckCircle2 size={40} color={Colors.success.accent} />
         </View>
 
-        <Text style={styles.title}>{title}</Text>
+        <Text style={styles.title} accessibilityRole="header">{title}</Text>
         <Text style={styles.message}>{message}</Text>
         {detail ? <Text style={styles.detail}>{detail}</Text> : null}
 

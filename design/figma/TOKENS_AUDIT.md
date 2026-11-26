@@ -1,6 +1,6 @@
 # TOKENS AUDIT — Figma vs `theme.ts`
 
-Generado automáticamente desde los 26 frames `(COLOR)`. Sirve para que ningún agente invente un hex o un tamaño.
+Generado automáticamente desde los 26 frames `(COLOR)` originales + 3 frames de sync agregados el 25/11/2026. Sirve para que ningún agente invente un hex o un tamaño.
 
 ## Regla
 
@@ -171,3 +171,24 @@ Si un valor de Figma no existe en `theme.ts`, se agrega al token central (lo hac
 5. **Radios 13/14/15:** son el mismo radio de tarjeta dibujado a mano. Canónico: `Radius.lg` (12) para tarjetas y `Radius.md` (8) para botones/inputs.
 6. **Colores no tokenizados:** ver tabla. Se agregan a `theme.ts` solo si son semánticos (no decorativos).
 7. **Verde `#2E7D32` / `#065F46`:** aparecen en detalles de éxito; el token oficial es `success.text` `#166534`.
+
+---
+
+## Delta 25/11/2026 — frames de sincronización
+
+Los frames `534:592`, `545:1646` y `545:2170` agregan solo el aviso de sync. Colores que
+introduce el delta (algunos ya existían en la tabla original):
+
+| Hex | Uso | Token / decisión |
+|---|---|---|
+| `#E0F2FE` | fondo del banner offline/syncing | `Colors.info.bg` ✅ |
+| `#7DD3FC` | borde del banner y del círculo del icono | `Colors.info.border` ✅ |
+| `#0369A1` | texto e icono del banner | `Colors.info.text` ✅ |
+| `#DCFCE7` | fondo del pill «Todo sincronizado» | `Colors.success.bg` ✅ |
+| `#166534` | texto del pill | `Colors.success.text` ✅ |
+| `#86EFAC` | borde del pill en Figma | normalizar a `Colors.success.border` (`#22C55E`) |
+| `#BAE6FD` | track de la barra de progreso | normalizar a `Colors.info.border` (`#7DD3FC`) |
+| `#0284C7` | fill de la barra de progreso | normalizar a `Colors.info.text` (`#0369A1`) |
+
+El fondo duplicado de Por Vencer sigue en `Inter`; el banner y el pill usan Plus Jakarta Sans.
+No se agregan tokens nuevos: se reutilizan los semánticos de `theme.ts`.

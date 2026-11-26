@@ -2,7 +2,10 @@
 
 Archivo Figma: **Trabajo IHC 4** · `kIp1kNoNNVro8kUdHhOuih`
 
-Frames fuente: los 26 nodos cuyo nombre termina en `(COLOR)` (case-insensitive). Exportados vía Figma REST API (`GET /v1/files/:key/nodes`).
+Frames fuente: los **29** nodos cuyo nombre termina en `(COLOR)` (case-insensitive). Los 26
+originales se exportaron vía Figma REST API (`GET /v1/files/:key/nodes`). Los frames `534:592`,
+`545:1646` y `545:2170` se agregaron el 25/11/2026 (la API ya estaba rate-limited: su JSON se
+reconstruyó del árbol de capas) y son **estados del aviso de sincronización**, no pantallas nuevas.
 
 > Los PNG **no** se pudieron bajar por API: el plan Figma es *Starter* y el endpoint de imágenes responde `429 / api_paywall`. Ver `README.md` para el export manual (1 clic por frame, sin tocar el proyecto).
 
@@ -11,7 +14,7 @@ Frames fuente: los 26 nodos cuyo nombre termina en `(COLOR)` (case-insensitive).
 | 1 | `519:4861` | Dashboard (COLOR) | Dashboard | `src/app/(tabs)/index.tsx` | 1 | `default` | 390×844 | 25 | [`specs/519-4861.md`](specs/519-4861.md) | `png/519-4861-dashboard.png` |
 | 2 | `519:5091` | Dashboard - Sin Alertas (Alivia) (COLOR) | Dashboard sin alertas | `src/app/(tabs)/index.tsx` | 1 | `empty` | 390×844 | 10 | [`specs/519-5091.md`](specs/519-5091.md) | `png/519-5091-dashboard-sin-alertas.png` |
 | 3 | `519:4932` | Configuracion (COLOR) | Configuración | `src/app/configuracion.tsx` | 1 | `default` | 390×844 | 27 | [`specs/519-4932.md`](specs/519-4932.md) | `png/519-4932-configuracion.png` |
-| 4 | `519:5018` | Modal - Sin Conexión al Servidor (Alivia) (COLOR) | Modal sin conexión al servidor | `src/components/SinConexionDialog.tsx` | 1 | `error` | 390×844 | 10 | [`specs/519-5018.md`](specs/519-5018.md) | `png/519-5018-sin-conexion.png` |
+| 4 | `519:5018` | Modal - Sin Conexión al Servidor (Alivia) (COLOR) | **DESCARTADO** (offline-first) | `—` | — | `descartado` | 390×844 | 10 | [`specs/519-5018.md`](specs/519-5018.md) | `png/519-5018-sin-conexion.png` |
 | 5 | `521:32` | PopUp: Venta Registrada con Éxito - Alivia (COLOR) | Venta registrada con éxito | `src/app/venta-exitosa.tsx` | 2 | `success` | 390×884 | 26 | [`specs/521-32.md`](specs/521-32.md) | `png/521-32-venta-exitosa.png` |
 | 6 | `519:5706` | PorVencer (COLOR) | Por Vencer · 15 días | `src/app/por-vencer.tsx` | 2 | `default` | 390×844 | 39 | [`specs/519-5706.md`](specs/519-5706.md) | `png/519-5706-por-vencer.png` |
 | 7 | `519:6029` | PorVencer - Pestaña 30 días (Alivia) (COLOR) | Por Vencer · 30 días | `src/app/por-vencer.tsx` | 2 | `default` | 390×844 | 39 | [`specs/519-6029.md`](specs/519-6029.md) | `png/519-6029-por-vencer-30.png` |
@@ -34,6 +37,11 @@ Frames fuente: los 26 nodos cuyo nombre termina en `(COLOR)` (case-insensitive).
 | 24 | `519:4523` | Filtro Historial (Color) | Filtro Historial | `src/components/FiltroHistorialSheet.tsx` | 6 | `default` | 390×884 | 39 | [`specs/519-4523.md`](specs/519-4523.md) | `png/519-4523-filtro-historial.png` |
 | 25 | `519:4263` | Historial Sin movimientos (Color) | Historial · sin movimientos | `src/app/historial.tsx` | 6 | `empty` | 390×884 | 8 | [`specs/519-4263.md`](specs/519-4263.md) | `png/519-4263-historial-vacio.png` |
 | 26 | `521:250` | PopUp: Descarte Registrada con Éxito - Alivia (COLOR) | Descarte registrado con éxito | `src/app/descarte-exitoso.tsx` | 6 | `success` | 390×884 | 26 | [`specs/521-250.md`](specs/521-250.md) | `png/521-250-descarte-exitoso.png` |
+| 27 | `534:592` | Sincronizando Cambios (Color) | Aviso sync · **Syncing** | `src/components/SyncBanner.tsx` | 4 | `sync` | 390×844 | 41 | [`specs/534-592.md`](specs/534-592.md) | `png/534-592-sync-sincronizando.png` |
+| 28 | `545:1646` | Sincronizando Cambios (Color) | Aviso sync · **Offline** | `src/components/SyncBanner.tsx` | 4 | `sync` | 390×844 | 41 | [`specs/545-1646.md`](specs/545-1646.md) | `png/545-1646-sync-offline.png` |
+| 29 | `545:2170` | PorVencer (COLOR) | Aviso sync · **Done** (pill) | `src/components/SyncBanner.tsx` | 4 | `sync` | 390×844 | 40 | [`specs/545-2170.md`](specs/545-2170.md) | `png/545-2170-sync-completado.png` |
+
+> Los PNG de los frames de sync ya están exportados y renombrados.
 
 ## Frames que NO se implementan como pantalla aparte
 
@@ -42,8 +50,24 @@ Frames fuente: los 26 nodos cuyo nombre termina en `(COLOR)` (case-insensitive).
   «Confirmar descarte»). No es una ruta propia: Int 4 lo usa como referencia visual del estado
   de error dentro de `descartar/[id].tsx`. Tiene dos bugs de copy que se corrigen al implementar:
   «CANTIDAD A Descartar» y «Ajustar al maximo disponible (200 unidades)» con cantidad 0.
+- `519:5018` — «Modal - Sin Conexión al Servidor»: **descartado**. Contradice el offline-first:
+  la app nunca bloquea ni dice «El stock no cambió» porque la venta/descarte siempre se guarda
+  local. Se conserva el JSON/PNG/spec solo para trazabilidad. **No crear
+  `SinConexionDialog.tsx`**. El aviso de conexión es el banner no bloqueante `SyncBanner`
+  (Int 4, §9.1 de `PROMPT_AGENTES.md`).
+- `534:592`, `545:1646`, `545:2170` — **estados del aviso de sincronización**, no rutas:
+  - `534:592` → `syncing`: «Sincronizando cambios…» + progreso.
+  - `545:1646` → `offline`: «Sin conexión» + N cambios guardados.
+  - `545:2170` → `done`: pill verde «Todo sincronizado».
+  El frame `545:2170` se llama «PorVencer» porque el diseñador duplicó la pantalla, pero el
+  único elemento nuevo es el pill. El banner de los otros dos frames está dibujado a `y=241`
+  (sobre la barra DESHACER); en la app va **fijo debajo de `AppHeader`**. El botón X de los
+  frames **se descarta**: el aviso no tiene botones.
 
 ## Duplicados aparentes
 
 - `519:3397`, `519:3556` y `519:3715` comparten nombre en Figma. Ya se separaron comparando el
   contenido: 3397 = venta con 250 de 200 (excedida), 3556 = venta con 0, 3715 = descarte con 0.
+- `534:592` y `545:1646` se llaman igual («Sincronizando Cambios») pero son estados distintos:
+  syncing y offline. `545:2170` se llama «PorVencer» igual que `519:5706`; solo agrega el pill
+  «Todo sincronizado». En el export manual, renombrar a mano (ver `png/LEEME.md`).

@@ -13,9 +13,9 @@ export default function PorVencerScreen() {
 
   // Datos semilla de Figma
   const items = [
-    { id: '1', name: 'Ibuprofeno 400 mg', lote: 'IB-449', desc: 'Comprimidos caja', stock: '5 unidades', days: 15, severity: 'critical' },
-    { id: '2', name: 'Paracetamol 500 mg', lote: 'P-500', desc: 'Jarabe infantil', stock: '3 frascos', days: 12, severity: 'critical' },
-    { id: '3', name: 'Amoxicilina 250 mg', lote: 'AMX-12', desc: 'Suspensión 60ml', stock: '2 frascos', days: 8, severity: 'critical' },
+    { id: 'ib-449', name: 'Ibuprofeno 400 mg', lote: 'IB-449', desc: 'Comprimidos caja', stock: '5 unidades', days: 15, severity: 'critical' },
+    { id: 'p-500', name: 'Paracetamol 500 mg', lote: 'P-500', desc: 'Jarabe infantil', stock: '3 frascos', days: 12, severity: 'critical' },
+    { id: 'amx-12', name: 'Amoxicilina 250 mg', lote: 'AMX-12', desc: 'Suspensión 60ml', stock: '2 frascos', days: 8, severity: 'critical' },
   ];
 
   return (

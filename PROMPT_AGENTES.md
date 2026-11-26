@@ -22,9 +22,12 @@ Léelo completo una vez. Después cada integrante copia **solo su bloque** (Secc
 
 Orden obligatorio:
 
-1. Lead ejecuta Fase 0 y confirma que `npx tsc --noEmit` pasa.
-2. Cada integrante implementa su bloque en su rama local (sin commit propio).
-3. Integrante verifica su pantalla con el checklist de la Sección 20.
+1. Lead ejecuta Fase 0 (incluida la corrección de `undoLast`/`sync_outbox` de §2.3) y confirma
+   que `npx tsc --noEmit` pasa.
+2. Cada integrante **crea su rama** `feature/integranteN-...` desde `main`, implementa solo su
+   bloque y **commitea ahí**. No mergea ni toca `main`.
+3. Integrante verifica su pantalla con el checklist de la Sección 20 y las pantallas vecinas
+   con la matriz de regresión de §5.3.
 4. Lead integra y corre la verificación global.
 5. Lead prueba en el Galaxy A56 físico.
 
@@ -38,7 +41,7 @@ Antes de repartir bloques hay que instalar la base compartida. **Ya está escrit
 en `design/fase0/`; el lead no la programa, solo la copia:
 
 ```bash
-bash design/fase0/instalar.sh     # copia los 7 archivos a src/
+bash design/fase0/instalar.sh     # copia los 10 archivos a src/
 npx tsc --noEmit                  # debe dar 0 errores
 npx eslint src                    # debe dar 0 warnings
 ```
@@ -55,10 +58,19 @@ estos archivos; solo los importan.
 | `src/components/ui/index.ts` | exporta `AppHeader` | Un solo punto de importación. |
 | `src/lib/demo-data.ts` | `DEMO_LOTS`, `DEMO_MOVEMENTS`, `APP`, tipos y helpers | Dataset único y coherente. |
 | `src/lib/format.ts` | `formatBs`, `formatQty`, `daysLabel`, `formatDate`, `normalizeSearch` | Copy numérico y fechas relativas. |
-| `src/lib/repository.ts` | hooks y acciones de stock/movimientos | Estado compartido entre pantallas. |
+| `src/lib/repository.ts` | hooks y acciones de stock/movimientos | Estado compartido entre pantallas. Ya llama a `notifyLocalChange()` y limpia el outbox al deshacer. |
+| `src/lib/supabase.ts` | cliente + `SUPABASE_URL`, `SUPABASE_ANON_KEY`, `isSupabaseConfigured` | Conexión real con Supabase usando solo la publishable key. |
+| `src/lib/sync.ts` | `useSync()`, `notifyLocalChange()`, `startSyncWatcher()` | Motor real outbox → Supabase (offline-first, 5.5 s de gracia, idempotente). |
+| `src/lib/uuid.ts` | `newUuid()` | UUIDs remotos sin dependencias nuevas. |
 
 Código exacto de cada archivo: `design/fase0/`. No se transcribe acá para que no haya dos
 versiones. Si el lead necesita cambiar algo, lo cambia en `design/fase0/`, reinstala y avisa.
+
+> **Backend ya configurado:** `.env` tiene la URL y la publishable key reales. Los 18 lotes
+> canónicos ya están sembrados en Supabase (`scripts/seed-supabase.cjs`). La app **no simula**
+> la sync: `lib/sync.ts` escribe ventas, descartes, movimientos y stock en Supabase.
+> `src/app/_layout.tsx` ya importa `repository` para arrancar hidratación + sync sin depender
+> de que una pantalla use los hooks.
 
 ### 2.1 Contrato de `AppHeader`
 
@@ -102,6 +114,9 @@ Uso estándar en toda pantalla con barra superior:
   {/* contenido con gutter automático */}
 </Screen>
 ```
+
+En las pantallas que muestran el aviso de sync, el header se compone con `SyncBanner`
+(`header={<><AppHeader back /><SyncBanner /></>}`); ver §9.1.
 
 Las pantallas sin barra (sheets y popups) siguen usando `Screen` como hoy.
 
@@ -187,8 +202,16 @@ Reglas:
 - Persistencia local con el SQLite ya inicializado (`src/lib/sqlite.ts`). No agregar dependencias.
 - En web, `sqlite.web.ts` ya provee el shim; la UI no cambia.
 - Toda mutación descuenta stock, crea `inventory_movements` y deja la operación en `sync_outbox`.
+- `useLot(id)` resuelve por id local (`ib-449`), por código de lote (`IB-449`), por nombre o por
+  el índice viejo (`1`, `2`, `3`) para no romper las pantallas durante la migración. Las
+  pantallas nuevas deben pasar siempre el **id local**.
 - `sellBatch`/`discardBatch` rechazan cantidad `<= 0`, `> stock` o lote vencido (venta).
 - `undoLast` restaura stock y borra el movimiento creado por la última operación, solo dentro de 5 s.
+
+> ✅ **Undo y outbox:** `persistUndo()` ya elimina la fila `PENDING` asociada
+> (`json_extract(payload,'$.saleId')` / `$.discardId`). Además, `lib/sync.ts` espera **5.5 s**
+> antes de empujar (la ventana de undo es 5 s), así que la operación todavía no llegó a
+> Supabase y se cancela sin dejar un cambio fantasma.
 
 ### 2.4 Contrato de `format.ts`
 
@@ -223,12 +246,16 @@ label 11 `fontFamilySemiBold` `textSecondary` y valor 18 `fontFamilyBold` `text`
 
 Si el agente hace cualquiera de estas cosas, **rompe el proyecto**.
 
-1. **No ejecutar** `npm install`, `npm i`, `npx expo install`, `npm update`, `npm audit fix`, `expo prebuild`, `pod install`.
+1. **Instalación inicial:** `npm ci` **una vez** al clonar (instala lo que ya está en el lockfile).
+   Después, **prohibido agregar o actualizar dependencias**: `npm install <paquete>`, `npx expo install`,
+   `npm update`, `npm audit fix`, `expo prebuild`, `pod install`. No se toca `package.json`.
 2. **No modificar** `package.json` ni `package-lock.json`. Versionado congelado.
-3. **No modificar** `src/constants/theme.ts`, `src/components/ui/*`, `src/lib/sqlite*`, `src/lib/supabase.ts`, `src/types/*`, `app.json`, `tsconfig.json`, `eslint.config.js`, `.env`, `ios/`, `android/`.
+3. **No modificar** `src/constants/theme.ts`, `src/components/ui/*`, `src/lib/sqlite*`, `src/lib/supabase.ts`, `src/lib/sync.ts`, `src/lib/uuid.ts`, `src/types/*`, `app.json`, `tsconfig.json`, `eslint.config.js`, `ios/`, `android/`. El `.env` es local: se crea desde `.env.example` y **nunca se commitea**.
 4. **No modificar** `src/app/_layout.tsx` ni `src/app/(tabs)/_layout.tsx`. Todas las rutas ya existen.
-5. **No usar Git** para commit, branch, stash, reset, clean ni checkout. El lead integra.
-6. **No agregar** librerías, fuentes, iconos ni assets. Todo sale de lo instalado.
+5. **Git:** cada integrante crea y usa **solo su rama** `feature/integranteN-...` desde `main`.
+   Prohibido commitear en `main`, mergear, rebasear, `reset --hard`, `clean -fd`, `stash`,
+   `push --force` o tocar ramas ajenas. El lead integra.
+6. **No agregar** librerías, fuentes, iconos ni assets. Todo sale de lo instalado (tabla 5.1).
 7. **No escribir** hex, tamaños, radios, sombras ni espaciados sueltos. Todo sale de `theme.ts` o de un componente compartido.
 8. **No duplicar** botones, cards, badges, chips, sheets, diálogos ni headers. Si falta una variante, se pide al lead.
 9. **No inventar** pantallas, rutas, estados ni textos. El copy está en la Sección 15 y en `design/figma/specs/`.
@@ -265,7 +292,9 @@ Consecuencias de diseño:
 - Botones grandes, texto legible, una decisión por pantalla.
 - El estado de vencimiento nunca depende solo del color: siempre lleva texto («Vence en 15 días»).
 - Las acciones destructivas piden confirmación y ofrecen deshacer 5 s.
-- La app debe funcionar **sin conexión** para leer y registrar; sincroniza después.
+- La app debe funcionar **sin conexión** para leer y registrar. La sincronización es
+  **automática**: la usuaria nunca ve un botón de «Reintentar» ni un modal de desconexión.
+  Mientras hay cambios pendientes, un aviso no bloqueante le dice que ya están guardados.
 
 ---
 
@@ -282,7 +311,45 @@ Consecuencias de diseño:
 | Iconos | `lucide-react-native ^1.78.0` |
 | Estado servidor | `@tanstack/react-query ^5.108.4` |
 | Persistencia | `expo-sqlite ~58.0.18` |
-| Backend | Supabase (BaaS). **Sin API propia.** |
+| Backend | Supabase **real** (PostgreSQL + REST). **Sin API propia.** Publishable key en la app; secret key solo para seed/admin. |
+
+### 5.1 Librerías: qué se usa y qué está prohibido
+
+Todo lo que la app necesita **ya está instalado**. Si un agente cree que le falta algo, no lo
+instala: lo pide al lead y se resuelve con lo que hay.
+
+| Necesidad | Se usa | Prohibido |
+|---|---|---|
+| Iconos | `lucide-react-native` (mapeo de la Sección 8.5) | `@expo/vector-icons`, iconos en PNG/SVG propios, emojis |
+| Tipografía | `@expo-google-fonts/plus-jakarta-sans` vía `Typography` | Otra fuente, `fontFamily` del sistema, pesos 800 |
+| Navegación | `expo-router` (`router`, `useLocalSearchParams`, `Link`) | `@react-navigation/*` directo, navegación manual con estado |
+| Estado de pantalla | `useState`/`useMemo` + hooks de `repository.ts` | Redux, Zustand, Jotai, MobX, Context global nuevo |
+| Datos del servidor | `@supabase/supabase-js` **solo** dentro de `src/lib/sync.ts`; `@tanstack/react-query` si hiciera falta para lecturas | Llamar `supabase` desde pantallas, fetch manual para datos de UI, axios, SWR |
+| Conectividad y sincronización | `fetch` con `AbortController` y `supabase` **solo** dentro de `src/lib/sync.ts` (Lead), para el sondeo de red y el vaciado de `sync_outbox` | `expo-network`, `@react-native-community/netinfo`, `axios`, sincronización manual, botones de sync |
+| Persistencia | `expo-sqlite` a través de `lib/sqlite.ts` y `repository.ts` | AsyncStorage, MMKV, localStorage, archivos JSON |
+| Fechas y números | `lib/format.ts` | date-fns, dayjs, moment, `toLocaleDateString` |
+| Formularios | `TextInput` de RN + validación propia | Formik, React Hook Form, Zod |
+| Animaciones | `Animated` de RN para microinteracciones (150–250 ms) | Lottie, Moti, animaciones infinitas, parallax |
+| Aviso de sync | `SyncBanner` (Int 4) consume `useSync()` de `lib/sync.ts` (Lead) | Modal de desconexión, `Alert`, banner con botones |
+| Layout y safe area | `Screen`, `AppHeader`, `useSafeAreaInsets` | `Dimensions` para escalar, `react-native-size-matters` |
+| Teclado | `KeyboardAvoidingView` + `keyboardShouldPersistTaps` | Librerías de teclado |
+| UI | `src/components/ui/*` + `theme.ts` | NativeBase, Paper, Gluestack, Tamagui, styled-components |
+| Imágenes | `expo-image` solo si hay asset aprobado | Nuevos assets, imágenes de internet |
+| Notificaciones | Solo persistir preferencias (`preferences.ts`) | `expo-notifications` (no está instalado), push |
+| Haptics, cámara, biometría, gráficos | No se usan | Cualquier librería nueva |
+
+Reglas:
+
+- **Prohibido** `@expo/ui`, `expo-glass-effect` y `expo-symbols`: están instalados por la
+  plantilla, pero su look no es el de Figma y rompen la consistencia entre pantallas.
+- La única animación en loop permitida es la rotación lenta del icono `RefreshCw` del
+  `SyncBanner` **mientras dura el estado `syncing`**: se detiene al terminar y se desactiva si
+  el sistema pide reducir movimiento. No es decorativa ni infinita.
+- Nada de `styled-components`, `tailwind` ni clases: solo `StyleSheet` y tokens.
+- Nada de `expo-image-picker`, `expo-camera`, `expo-haptics`, `expo-notifications`: no están
+  en `package.json` y agregarlos rompe el candado.
+- Si el agente propone “una librería chiquita” para fechas, iconos, formularios o animaciones,
+  la respuesta es **no**: ya hay solución en el repo.
 
 ### Candado de versionado
 
@@ -294,7 +361,8 @@ package-lock.json   sha256 11198a6e8ca63e76e3d103603a510985f7a3ce778183a5d71fa25
 Verificación obligatoria antes de entregar:
 
 ```bash
-git diff --name-only | grep -E 'package(-lock)?\.json' && echo 'ROMPISTE EL CANDADO' || echo 'OK'
+git diff --name-only main...HEAD | grep -E 'package(-lock)?\.json' && echo 'ROMPISTE EL CANDADO' || echo 'OK'
+git diff --name-only main...HEAD | grep -q '^\.env$' && echo 'NO COMMITEES .env' || echo 'OK'
 ```
 
 Si el candado se rompe, el lead rechaza la entrega completa.
@@ -305,19 +373,154 @@ Si el candado se rompe, el lead rechaza la entrega completa.
 ### Comandos permitidos
 
 ```bash
+npm ci                  # SOLO la primera vez, al clonar (respeta el lockfile)
 npx tsc --noEmit
 npx eslint src
 npx expo start          # solo lead
 npx expo start --web    # solo lead, vista previa
+node scripts/seed-supabase.cjs   # solo lead, con SUPABASE_SECRET_KEY por env
+
+# Git del integrante (solo su rama)
+git status
+git switch main
+git pull --ff-only origin main   # solo si hay remoto
+git switch -c feature/integranteN-...
+git switch feature/integranteN-...
+git diff
+git diff --stat main...HEAD
+git add <archivo1> <archivo2>        # nunca git add -A
+git commit -m "feat(scope): mensaje"
+git log --oneline main..HEAD
+git push -u origin feature/integranteN-...   # solo si el lead lo pide
 ```
 
 ### Comandos prohibidos
 
 ```bash
-npm install · npm i · npm ci · npm update · npm audit fix
+npm install <paquete> · npm i <paquete> · npm update · npm audit fix
 npx expo install · npx expo prebuild · npx expo run:android
-git commit · git checkout · git reset --hard · git clean -fd · git stash
+
+git checkout main · git checkout . · git restore .
+git merge · git rebase · git reset --hard · git clean -fd · git stash
+git push --force · git push origin main
+git add -A · git add .                # agrega archivos ajenos y basura
 ```
+
+### 5.2 Flujo Git obligatorio por integrante
+
+Cada integrante **crea su propia rama desde `main`** y trabaja solo ahí. No hay excepciones,
+ni “commits rapiditos en `main`”.
+
+| Integrante | Rama que crea | Archivos que van en esa rama |
+|---|---|---|
+| 1 | `feature/integrante1-dashboard-config` | Dashboard, Configuración, `preferences.ts` |
+| 2 | `feature/integrante2-por-vencer` | Por Vencer, Venta exitosa |
+| 3 | `feature/integrante3-detalle-producto` | Detalle, popup de retiro |
+| 4 | `feature/integrante4-operaciones-venta` | Venta, Descartar, `SyncBanner.tsx` |
+| 5 | `feature/integrante5-stock-fefo` | Stock, Filtro Stock |
+| 6 | `feature/integrante6-historial-bajas` | Historial, Filtro Historial, Descarte exitoso |
+
+Pasos exactos:
+
+1. `git status`: debe estar limpio. Si hay cambios, **no empieces**: preguntá al lead.
+2. `git switch main`. Si hay remoto: `git pull --ff-only origin main`.
+3. Creá tu rama: `git switch -c feature/integranteN-...`.
+   - Si ya existe: `git switch feature/integranteN-...`. **No la borres ni la recrees.**
+4. Implementá **solo** los archivos de tu bloque. Si necesitás un cambio en un archivo del lead
+   o de otro integrante, se lo pedís al lead; no lo editás en tu rama.
+5. Commiteá en pasos chicos, no un commit gigante al final:
+   ```bash
+   git add src/app/por-vencer.tsx
+   git commit -m "feat(por-vencer): tabs y tarjetas FEFO"
+   ```
+   Mensajes: `feat(scope): ...`, `fix(scope): ...`, `test(scope): ...`, `docs(scope): ...`.
+6. Antes de entregar:
+   ```bash
+   git diff --name-only main...HEAD   # solo tus archivos
+   git log --oneline main..HEAD       # tus commits
+   npx tsc --noEmit
+   npx eslint src
+   ```
+   Y corré la matriz de regresión de §5.3.
+7. Si el lead lo pide, subí **solo tu rama**:
+   `git push -u origin feature/integranteN-...`. Nunca `main`, nunca `--force`.
+8. **No mergees ni rebasees.** El lead integra. Si `main` avanzó, avisale; no reescribas la
+   historia para “ponerte al día”.
+
+Reglas de higiene:
+
+- No commitees `node_modules/`, `.expo/`, `dist/`, logs ni archivos temporales.
+- No uses `git add .` ni `git add -A`: agregá archivo por archivo.
+- Un commit = un cambio lógico. Si rompiste algo y no sabés arreglarlo, no commitees a medias:
+  avisá.
+- No toques ramas ajenas ni la rama `main`.
+
+### 5.3 Testing y no-regresión (obligatorio)
+
+**No alcanza con que tu pantalla se vea bien.** Tenés que probar que lo que agregaste no rompió
+lo que ya funcionaba.
+
+#### Después de cada cambio
+
+1. `npx tsc --noEmit` → 0 errores.
+2. `npx eslint src` → 0 warnings y 0 errores.
+3. Probar en el **Galaxy A56 físico**, no solo en web.
+
+#### Backend real (verificación obligatoria)
+
+- `.env` con `EXPO_PUBLIC_SUPABASE_URL` y `EXPO_PUBLIC_SUPABASE_ANON_KEY` reales.
+- Los 18 lotes están sembrados: `node scripts/seed-supabase.cjs` (con `SUPABASE_SECRET_KEY`
+  por variable de entorno, **nunca** en `.env` ni en `EXPO_PUBLIC_*`).
+- Una venta/descarte de prueba debe crear filas en `sales`/`sale_items`/`discards`/
+  `inventory_movements` y actualizar `batches.current_stock`.
+- Si Supabase no responde, la app sigue funcionando local, pero la entrega **no está completa**
+  hasta que la sync real funcione.
+
+#### Checklist mínimo
+
+- [ ] La app **arranca** sin pantalla roja; cargan las fuentes y SQLite hidrata.
+- [ ] Navegación: tabs, gesto “atrás”, entrar y salir de tu pantalla. No queda ningún modal pegado.
+- [ ] Tu pantalla cubre **todos** los estados de la matriz (default/loading/empty/error/success).
+- [ ] Los datos son reales: contadores, stock, movimientos y fechas coinciden con `demo-data`.
+- [ ] Vender/descartar descuenta stock, crea el movimiento y se refleja en las otras pantallas.
+- [ ] Deshacer funciona dentro de 5 s y deja de funcionar después.
+- [ ] Sync real: modo avión → operación → banner offline; al volver → syncing → done.
+      La venta/descarte debe aparecer en Supabase y el `current_stock` del lote debe coincidir.
+- [ ] Reintento: repetir la misma operación no duplica filas en Supabase (IDs idempotentes).
+- [ ] Teclado: el input no queda tapado y el CTA sigue visible.
+- [ ] Safe area: nada queda debajo de la barra de gestos ni de la tab bar.
+- [ ] Persistencia: cerrar y abrir la app conserva los cambios.
+- [ ] **TalkBack:** activarlo y recorrer tu pantalla completa (§13). Cada control anuncia
+      nombre, rol y estado; los errores se anuncian; los modales atrapan el foco; los iconos
+      decorativos no son foco. Adjuntar evidencia.
+- [ ] **Pantallas vecinas:** si tocaste un componente compartido o montaste `SyncBanner`,
+      recorré las 6 pantallas que lo usan (Dashboard, Configuración, Por Vencer, Detalle,
+      Stock, Historial).
+
+#### Matriz mínima de regresión por bloque
+
+| Bloque | Probá sí o sí |
+|---|---|
+| Int 1 | Dashboard normal y vacío; switches de Configuración; banner de sync; navegación a Por Vencer/Stock/Historial. |
+| Int 2 | Tabs 15/30/60; vacío; venta y descarte; undo; venta exitosa; banner de sync. |
+| Int 3 | Detalle normal/vencido/sin stock; popup; descarte; banner de sync. |
+| Int 4 | Venta y descarte; las 3 validaciones; confirmación; offline→syncing→done; undo. |
+| Int 5 | Búsqueda por nombre/lote; autocompletado; filtros; vacío; volver del detalle sin perder estado. |
+| Int 6 | Historial; filtros; vacío; descarte exitoso; undo; banner de sync. |
+
+#### Evidencia de entrega
+
+- Capturas de los estados principales y de la comparación con Figma.
+- Salida de `npx tsc --noEmit` y `npx eslint src` (o “0 errores”).
+- Lista de pruebas manuales que hiciste, con el resultado.
+- Si algo no se pudo probar, decilo; no lo inventes.
+
+#### Prohibido
+
+- Entregar con warnings, `console.log`, `TODO`, `any` o `@ts-ignore`.
+- Decir “en mi pantalla anda” sin probar navegación y pantallas vecinas.
+- Arreglar una pantalla ajena sin avisar.
+- Commitear sin haber corrido `tsc` y `eslint`.
 
 ---
 
@@ -399,6 +602,9 @@ No se copia:
 - Títulos de 24/26 px: se normalizan a `h1` (22).
 - Sombras exactas: se usan `Shadows.card/modal/sheet`.
 - Frames duplicados o de referencia (`519:3715`, que es un estado de Descartar, no una pantalla).
+- El fondo duplicado de Por Vencer en `534:592`, `545:1646` y `545:2170`: de esos frames solo
+  se copia el bloque `Status` (banner o pill) descrito en §9.1.
+- El modal `519:5018`: descartado, no se copia.
 
 ### Cómo trabajar con el congelado
 
@@ -546,7 +752,9 @@ Sombras: `Shadows.card`, `Shadows.modal`, `Shadows.sheet`. No inventar `elevatio
 | Vencido | `CalendarX2` | 20 |
 | Sin stock | `PackageX` | 20 |
 | Éxito | `CheckCircle2` | 40 |
-| Sin conexión | `WifiOff` | 40 |
+| Sync · offline | `CloudOff` | 16 |
+| Sync · syncing | `RefreshCw` | 16 |
+| Sync · done | `Check` | 14 |
 | Venta | `ArrowDownRight` | 20 |
 | Ingreso | `ArrowUpRight` | 20 |
 | Descarte | `TriangleAlert` | 20 |
@@ -566,16 +774,24 @@ Todos los iconos llevan `color` de token y `strokeWidth={2}`. No usar emojis en 
 | Touch target | 44 | 48 |
 | Título de modal | 20–22 | 20 |
 | Título de pantalla | 24 | 22 |
+| Sin conexión | Modal `519:5018` | banner no bloqueante `SyncBanner` (offline-first) |
+| Botón X del banner | Figma lo dibuja | **se descarta**: el aviso no tiene botones |
+| Pill «Todo sincronizado» | borde `#86EFAC` | `Colors.success.border` |
+| Progreso del sync | track `#BAE6FD` / fill `#0284C7` | `Colors.info.border` / `Colors.info.text` |
+| Posición del banner | `y=241` (sobre DESHACER) | fijo debajo de `AppHeader` |
+| Ancho del banner | 333 (márgenes 23/34) | ancho útil 352 con gutter 16 (consistencia con `Screen`) |
 
 Regla: **Figma (Color) > `theme.ts` > guía > prompts viejos.** Si Figma y `theme.ts` chocan en
-un token, gana `theme.ts` porque es el código; se reporta al lead.
+un token, gana `theme.ts` porque es el código; se reporta al lead. Las filas del aviso de sync
+son decisiones de producto ya cerradas: no se reabren.
 
 ---
 
 ## 9. Catálogo de componentes compartidos
 
-Todos los de la tabla viven en `src/components/ui` y se importan desde `@/components/ui`.
-**No se editan.** Si falta una variante, se pide al lead.
+Todos los de la tabla viven en `src/components/ui` y se importan desde `@/components/ui`,
+**salvo `SyncBanner`**, que vive en `src/components/SyncBanner.tsx` (Int 4). **No se editan.**
+Si falta una variante, se pide al lead.
 
 | Componente | Props principales | Cuándo usarlo | Cuándo NO |
 |---|---|---|---|
@@ -586,15 +802,17 @@ Todos los de la tabla viven en `src/components/ui` y se importan desde `@/compon
 | `Button` | `label`, `variant`, `icon`, `disabled`, `loading`, `fullWidth` | Toda acción | Texto clickeable (usar `Pressable`) |
 | `Badge` | `label`, `tone`, `solid` | Semáforo FEFO, estados | Etiquetas de formulario |
 | `Chip` | `label`, `selected`, `onPress`, `error` | Filtros y motivos | Tabs segmentadas |
-| `Sheet` | `title`, `subtitle`, `footer` | Cuerpo de bottom sheet | Modal centrado |
+| `Sheet` | `title`, `subtitle`, `footer`, `onRequestClose` | Cuerpo de bottom sheet animado (entra desde abajo; se arrastra hacia abajo desde el header) | Modal centrado |
 | `ConfirmDialog` | `title`, `subtitle`, `rows`, `primaryLabel`, `secondaryLabel`, handlers | Confirmación de acciones | Éxito |
 | `SuccessDialog` | `title`, `message`, `detail`, `summary`, `note`, `primaryLabel`, `secondaryLabel` | Venta/descarte exitoso | Errores |
-| `EmptyState` | `icon`, `title`, `description`, `actionLabel`, `onAction` | Listas vacías, sin resultados | Sin conexión |
+| `EmptyState` | `icon`, `title`, `description`, `actionLabel`, `onAction` | Listas vacías, sin resultados | Conectividad (eso es `SyncBanner`) |
 | `UndoSnackbar` | `message`, `actionLabel`, `onAction` | Deshacer 5 s en listas | Confirmación de modal |
+| `SyncBanner` | (ninguna) | Aviso de sincronización global: se monta debajo de `AppHeader` | Dentro del scroll |
 
-Fuera de `ui/`, pero compartido: `SinConexionDialog` (`src/components/SinConexionDialog.tsx`,
-dueño Int 1) con props `visible`, `onRetry`, `onCancel`, `message`. Se usa ante falla de
-escritura / modo offline. No se usa para errores de validación.
+Fuera de `ui/`, pero compartido: `SyncBanner` (`src/components/SyncBanner.tsx`, dueño Int 4).
+Se monta **solo** como fragmento junto a `AppHeader` en el prop `header` de `Screen`. No acepta
+props; lee su estado de `lib/sync.ts`. Es el único aviso de conectividad de la app. No existe
+`SinConexionDialog`: quedó descartado con el offline-first.
 
 ### Reglas de composición
 
@@ -605,6 +823,128 @@ escritura / modo offline. No se usa para errores de validación.
 - Los sheets usan `Sheet`; los popups centrados usan `ConfirmDialog`/`SuccessDialog`.
 - Los estados vacíos usan `EmptyState`; no se arma uno nuevo.
 - El scrim siempre es `Colors.scrim`; no usar `rgba` suelto.
+
+---
+
+### 9.1 Aviso de sincronización (`SyncBanner` + `lib/sync.ts`) — UI Int 4 · motor Lead
+
+Es el reemplazo del viejo modal de desconexión. **No bloquea, no pide acción, no usa modales.**
+Se muestra solo cuando hay cambios pendientes de sincronizar y se va solo.
+
+#### Cuándo aparece
+
+- **Sin cambios pendientes** → no se muestra nada (aunque no haya red).
+- **Cambio guardado sin red** → estado `offline`.
+- **Volvió la red y hay pendientes** → estado `syncing`.
+- **Sincronización terminada** → pill `done` 2.5 s y desaparece.
+
+#### API (`src/lib/sync.ts`, Lead)
+
+```ts
+export type SyncPhase = 'idle' | 'offline' | 'syncing' | 'done';
+
+export function useSync(): { phase: SyncPhase; pending: number; progress: number };
+
+// Lo llama repository.ts después de cada mutación y de cada undo.
+// Las pantallas NO lo llaman.
+export function notifyLocalChange(): void;
+
+// repository.ts deja un watcher permanente. El SyncBanner puede sumar el suyo
+// en un useEffect y limpiarlo al desmontar (refcount; no duplica intervalos).
+export function startSyncWatcher(): () => void;
+```
+
+Reglas de `lib/sync.ts` (ya implementado, no es tarea de los integrantes):
+
+- `pending` sale de `SELECT COUNT(*) FROM sync_outbox WHERE status = 'PENDING'`.
+  El watcher arranca solo al importar `repository.ts`; el `SyncBanner` solo lo observa.
+- Sondeo: `fetch(`${SUPABASE_URL}/rest/v1/products?select=id&limit=1`)` con la publishable key,
+  `AbortController` y timeout 4 s. Si falla, `offline`; reintenta cada 8 s y al volver a foreground.
+- Si `pending > 0` y hay red → `syncing`. Espera **5.5 s** desde `created_at` (la ventana de
+  undo es 5 s), luego empuja la operación a Supabase.
+- Escritura real por operación: `sales` + `sale_items` + `inventory_movements` + update de
+  `batches.current_stock` (o `discards` + movimiento + stock).
+- IDs remotos UUID estables guardados en el payload: reintentar no duplica (upsert por `id`).
+- `SYNCED` **solo** después de que Supabase confirmó todas las escrituras. Si algo falla, la
+  fila queda `PENDING` y el banner vuelve a `offline`.
+- Al terminar, si `pending === 0` → `done` (2.5 s) → `idle`. Si llegaron pendientes nuevos,
+  sigue en `syncing`/`offline` y no muestra `done`.
+- En web no hay SQLite: el motor queda `idle`; la demo real es en el A56.
+- Usa el mismo patrón `useSyncExternalStore` de `repository.ts`. No crea providers.
+
+#### Estados y copy exacto
+
+| Fase | Frame | Icono | Título | Cuerpo |
+|---|---|---|---|---|
+| `offline` | `545:1646` | `CloudOff` | `Sin conexión` | `{N} cambios guardados. Se sincronizarán automáticamente cuando vuelva la conexión.` |
+| `syncing` | `534:592` | `RefreshCw` (rota) | `Sincronizando cambios…` | `La conexión volvió, espere mientras se sincronizan los cambios.` |
+| `done` | `545:2170` | `Check` | — | `Todo sincronizado` (pill, no banner) |
+
+Plural del cuerpo `offline`: `1 cambio guardado. Se sincronizará…` / `{N} cambios guardados. Se sincronizarán…`.
+
+#### Visual
+
+| Bloque | Medida Figma | Implementación |
+|---|---|---|
+| Banner | 333×64, r12, borde 1, `#E0F2FE` | `View` con `marginHorizontal: Spacing.gutter`, `marginTop: Spacing.three`, `minHeight: 64`, `borderRadius: Radius.lg`, borde 1 `Colors.info.border`, fondo `Colors.info.bg`, `padding` 14/10/8 |
+| Círculo de icono | 32×32, blanco, borde `info.border` | `View` 32×32 `borderRadius: Radius.pill`, fondo `surface`, borde 1 `info.border`, `center` |
+| Icono | 16 | `CloudOff`/`RefreshCw` 16, color `Colors.info.text` |
+| Título | 13/600 | `Typography.scale.body` + `fontFamilySemiBold` + `Colors.info.text` |
+| Cuerpo | 12/400 | `Typography.scale.metadata` + `fontFamilyRegular` + `Colors.info.text` |
+| Gap icono→texto | 12 | `gap: Spacing.md` |
+| Gap título→cuerpo | 2 | `gap: Spacing.half` |
+| Progreso (solo syncing) | 2 dp, track/fill | `View` 2 alto, `borderRadius: Radius.pill`; track `info.border`, fill `info.text`, ancho = procesados/total |
+| Pill done | 152×32, r9999, `#DCFCE7`, borde 1 | `View` 152×32 `Radius.pill`, fondo `Colors.success.bg`, borde 1 `Colors.success.border`, `row`, `gap: Spacing.two`, padding 14/6; icono `Check` 14 + texto 12/600 `success.text` |
+
+El pill `done` se renderiza con `position: 'absolute'`, `alignSelf: 'center'` y
+`bottom: insets.bottom + 76` (pantallas con tab bar) o `insets.bottom + 16` (apiladas). Como
+`SyncBanner` vive en el prop `header` de `Screen`, su padre es el root de la pantalla y el pill
+queda flotando sobre la barra inferior. `pointerEvents="none"`: no debe robar toques.
+
+#### Integración en las pantallas
+
+Cada dueño agrega `SyncBanner` al header de su `Screen`. Ejemplo:
+
+```tsx
+import { SyncBanner } from '@/components/SyncBanner';
+
+<Screen header={<><AppHeader back /><SyncBanner /></>}>
+```
+
+No se exporta desde `components/ui/index.ts` (ese barril es del lead). Se aplica en Dashboard,
+Configuración, Por Vencer, Detalle, Stock e Historial. Los sheets
+(`venta/[id]`, `descartar/[id]`) y los popups **no** llevan banner: están encima de su pantalla,
+que ya lo muestra. **No llamen `notifyLocalChange()` desde las pantallas:** `repository.ts` ya
+lo hace después de cada mutación y de cada undo.
+
+#### Prohibido (para Int 4 y para quien lo monte)
+
+- No hay botones, ni X, ni «Reintentar», ni «Sincronizar ahora», ni ajustes de sync en Configuración.
+- No usar `Modal`, `Alert`, `EmptyState`, ni `WifiOff` para la conectividad.
+- No bloquear la venta/descarte por falta de red: siempre se guarda local.
+- No mostrar el banner sin cambios pendientes.
+- No usar `expo-network`/NetInfo ni instalar nada.
+
+#### Prueba manual (demo)
+
+1. Activar **modo avión** en el A56.
+2. Vender o descartar un lote → la operación se registra y aparece
+   `Sin conexión` / `1 cambio guardado…`.
+3. Hacer otra operación → el contador pasa a `2 cambios guardados…`.
+4. Desactivar el modo avión → a los ≤ 6 s aparece `Sincronizando cambios…`, luego el pill
+   `Todo sincronizado` 2.5 s y desaparece.
+5. Verificar en Supabase: la fila en `sales`/`discards`, el `inventory_movements` y el
+   `batches.current_stock` actualizado. No debe duplicarse al reintentar.
+6. Verificar que en ningún momento se bloqueó la app ni se perdió la operación.
+
+> Backend real: `lib/sync.ts` escribe en Supabase con la publishable key. Los 18 lotes están
+> sembrados con `scripts/seed-supabase.cjs`. **No hay simulación.**
+
+#### Accesibilidad
+
+- Banner con `accessibilityLiveRegion="polite"` y `accessibilityRole="status"`.
+- Al entrar en `done`, anunciar `Todo sincronizado` con `AccessibilityInfo.announceForAccessibility`.
+- El `RefreshCw` rotatorio respeta `AccessibilityInfo.isReduceMotionEnabled()`.
 
 ---
 
@@ -748,14 +1088,14 @@ Toda pantalla debe cubrir, como mínimo, los estados que le corresponden:
 
 | Pantalla | default | loading | empty | error | success | pressed |
 |---|---|---|---|---|---|---|
-| Dashboard | sí | skeleton | sin alertas | banner offline | — | sí |
-| Por Vencer | sí | skeleton | pestaña vacía | banner offline | undo | sí |
+| Dashboard | sí | skeleton | sin alertas | banner sync | — | sí |
+| Por Vencer | sí | skeleton | pestaña vacía | banner sync | undo | sí |
 | Detalle | normal | — | sin stock | vencido | — | sí |
-| Venta | sí | confirmando | — | cantidad inválida / offline | — | sí |
+| Venta | sí | confirmando | — | cantidad inválida | — | sí |
 | Descartar | sí | confirmando | — | sin motivo / cantidad inválida | — | sí |
-| Stock | sí | skeleton | sin resultados | banner offline | — | sí |
+| Stock | sí | skeleton | sin resultados | banner sync | — | sí |
 | Filtro Stock | sí | aplicando | 0 resultados | — | — | sí |
-| Historial | sí | skeleton | sin movimientos | banner offline | — | sí |
+| Historial | sí | skeleton | sin movimientos | banner sync | — | sí |
 | Filtro Historial | sí | aplicando | 0 resultados | rango inválido | — | sí |
 | Configuración | sí | guardando | — | error de guardado | toast | sí |
 | Popups | confirm | procesando | — | error | éxito | sí |
@@ -765,6 +1105,9 @@ Reglas de estado:
 - **Loading:** `ActivityIndicator` con `Colors.primary`; nunca spinner de pantalla completa si ya hay datos.
 - **Empty:** `EmptyState` con icono, título y descripción; acción si aporta.
 - **Error:** mensaje concreto + acción de recuperación. Nunca «Algo salió mal».
+- **Conectividad:** NO es un estado de error. El «banner sync» es el `SyncBanner` de §9.1
+  (offline/syncing/done), global y no bloqueante. Nunca se usa `EmptyState` ni un modal para
+  la falta de red.
 - **Success:** `SuccessDialog` con resumen de lo ocurrido y «Continuar atendiendo».
 - **Pressed:** `activeOpacity={0.85}`; cambio de color en botones primarios.
 - **Disabled:** `Colors.disabledBg` + `textDisabled`; `accessibilityState={{ disabled: true }}`.
@@ -800,7 +1143,10 @@ Microinteracciones: 150–250 ms. Nada de animaciones de más de 300 ms ni rebot
 - Imágenes decorativas: `accessibilityElementsHidden` o `importantForAccessibility="no"`.
 - Estados: `accessibilityState={{ disabled, selected, busy }}`.
 - Inputs: `accessibilityLabel`, `accessibilityHint`, `keyboardType`, `returnKeyType`.
-- Títulos de pantalla: `accessibilityRole="header"`.
+- Títulos de pantalla y de diálogo: `accessibilityRole="header"`.
+- Diálogos: `accessibilityViewIsModal` y fondo oculto
+  (`importantForAccessibility="no-hide-descendants"` / `accessibilityElementsHidden`).
+- Chips de un grupo: `accessibilityRole="radio"` o `"checkbox"` y `accessibilityState={{ checked }}`.
 - El estado de vencimiento se anuncia con texto, no solo color.
 
 ### Anuncios dinámicos
@@ -823,10 +1169,34 @@ Microinteracciones: 150–250 ms. Nada de animaciones de más de 300 ms ni rebot
 
 ### Teclado
 
-- `KeyboardAvoidingView` con `behavior="padding"` en Android.
+- En `transparentModal` el teclado no redimensiona la pantalla: el sheet se levanta con
+  `Keyboard.addListener('keyboardDidShow'…)` + `transform: translateY(-keyboardHeight)`.
 - El CTA del sheet queda visible con el teclado abierto.
 - `keyboardShouldPersistTaps="handled"` en listas.
 - `TextInput` numérico: `keyboardType="number-pad"`, `maxLength={6}`, `selectTextOnFocus`.
+
+### Prueba con TalkBack (obligatoria)
+
+Activar TalkBack en el A56 y recorrer la pantalla:
+
+1. **Foco y orden:** swipe derecha/izquierda; el foco debe ir header → contenido → acciones.
+   No debe saltar a elementos decorativos ni al fondo cuando hay un modal abierto.
+2. **Anuncio de cada control:** nombre + rol + estado. Ejemplos:
+   - “Vender Ibuprofeno 400 mg, botón”.
+   - “Cantidad a vender, campo de texto. Entre 1 y 200 comprimidos”.
+   - “Vencido, radio, seleccionado”.
+3. **Estados:** deshabilitado, seleccionado, ocupado y marcado se anuncian.
+4. **Errores:** al aparecer un error, TalkBack lo anuncia (`accessibilityLiveRegion="polite"`).
+5. **Modales:** `ConfirmDialog`/`SuccessDialog` con `accessibilityViewIsModal`; el contenido
+   del fondo no debe ser enfocable mientras están abiertos.
+6. **Éxito y sync:** anunciar una sola vez “Venta registrada”, “Descarte registrado”,
+   “Todo sincronizado”.
+7. **Movimiento:** con “Reducir movimiento” activo, el sheet no se desliza; solo fade de 150 ms.
+8. **Fuente grande:** activar “Fuente grande” del A56; ningún texto ni CTA debe quedar cortado.
+9. **Targets:** todo control se activa con doble toque y mide ≥ 48×48 dp.
+10. **Evidencia:** incluir en la entrega qué se probó con TalkBack y el resultado.
+
+> Si una pantalla no pasa TalkBack, **no está terminada**, aunque se vea bien.
 
 ---
 
@@ -921,7 +1291,6 @@ Moneda: `Bs.` con dos decimales (`Bs. 15.00`). Fechas relativas (`Hoy, 19:42`).
 | Éxito | `Continuar atendiendo` |
 | Deshacer | `Deshacer (5 s)` |
 | Filtros | `Aplicar filtros` / `Restablecer` / `Cancelar` |
-| Sin conexión | `Reintentar` / `Cancelar` |
 | Vacío | `Limpiar búsqueda y filtros` |
 
 ### 15.4 Mensajes
@@ -947,7 +1316,9 @@ Moneda: `Bs.` con dos decimales (`Bs. 15.00`). Fechas relativas (`Hoy, 19:42`).
 | Popup venta | `¿Confirmar venta?` / `Se actualizará el stock de mostrador en tiempo real` |
 | Venta exitosa | `¡Venta registrada!` / `La salida ha sido descontada del inventario del mostrador.` |
 | Descarte exitoso | `¡Descarte registrado!` / `La salida ha sido descontada del inventario del mostrador.` |
-| Sin conexión | `Sin conexión al servidor` / `No se pudo guardar la operación. El stock no cambió. Revisa la conexión y vuelve a intentarlo.` |
+| Sync · offline | `Sin conexión` / `{N} cambios guardados. Se sincronizarán automáticamente cuando vuelva la conexión.` (1 → `1 cambio guardado. Se sincronizará…`) |
+| Sync · syncing | `Sincronizando cambios…` / `La conexión volvió, espere mientras se sincronizan los cambios.` |
+| Sync · done | `Todo sincronizado` |
 | Cantidad inválida | `Cantidad no válida.` / `Ingresa un número entre 1 y N unidades disponibles en el estante.` |
 | Sin motivo | `Debes seleccionar un motivo obligatorio para la baja.` |
 | Sin resultados | `Sin resultados para “{query}”` / `Ningún lote coincide con la búsqueda y los filtros activos. Toca × en un filtro o en el buscador para ampliar la búsqueda.` |
@@ -970,6 +1341,8 @@ Moneda: `Bs.` con dos decimales (`Bs. 15.00`). Fechas relativas (`Hoy, 19:42`).
 | `Descartar` como título de sheet en frame de venta | `Registrar venta` |
 | `Ver historial completo de productos` | `Ver historial completo de productos retirados` |
 | `Asistente` / `cliente` | no existen en la app |
+| Botón X del banner de sync | se omite (el aviso no tiene botones) |
+| «espere» en «Sincronizando cambios» | se mantiene (copy exacto de Figma) |
 
 ### 15.6 Prohibido
 
@@ -979,6 +1352,9 @@ Moneda: `Bs.` con dos decimales (`Bs. 15.00`). Fechas relativas (`Hoy, 19:42`).
 - Signos `!!`, mayúsculas sostenidas fuera de las etiquetas definidas.
 - Fechas de 2025 hardcodeadas.
 - Mezclar «medicamento» y «producto» en la misma pantalla.
+- `Reintentar`, `Cancelar`, `Sin conexión al servidor`, `El stock no cambió`, `Modo offline`:
+  pertenecen al modal descartado. No se usan en ninguna pantalla.
+- Cualquier botón, toggle o ajuste de sincronización (la sync es automática).
 
 ---
 
@@ -990,8 +1366,9 @@ Un archivo, un dueño. Si necesitás algo de otro, lo pedís; no lo editás.
 |---|---|
 | `src/app/(tabs)/index.tsx` | Integrante 1 |
 | `src/app/configuracion.tsx` | Integrante 1 |
-| `src/components/SinConexionDialog.tsx` | Integrante 1 |
 | `src/lib/preferences.ts` | Integrante 1 |
+| `src/components/SyncBanner.tsx` | Integrante 4 |
+| `src/lib/sync.ts`, `src/lib/uuid.ts` | Lead |
 | `src/app/por-vencer.tsx` | Integrante 2 |
 | `src/app/venta-exitosa.tsx` | Integrante 2 |
 | `src/app/detalle/[id].tsx` | Integrante 3 |
@@ -1007,6 +1384,8 @@ Un archivo, un dueño. Si necesitás algo de otro, lo pedís; no lo editás.
 | `src/constants/theme.ts` | Lead |
 | `src/lib/demo-data.ts`, `format.ts`, `repository.ts`, `sqlite*`, `supabase.ts` | Lead |
 | `src/types/*` | Lead |
+| `scripts/seed-supabase.cjs`, `scripts/canonical-demo.json`, `.env.example` | Lead |
+| `.env` | Local de cada uno; se crea desde `.env.example` y no se commitea |
 | `app.json`, `package*.json`, `tsconfig.json`, `eslint.config.js` | Lead |
 | `design/figma/*` | Solo lectura |
 
@@ -1017,9 +1396,11 @@ Un archivo, un dueño. Si necesitás algo de otro, lo pedís; no lo editás.
 Una entrega se acepta solo si cumple **todo**:
 
 ```bash
-npx tsc --noEmit          # 0 errores
-npx eslint src            # 0 warnings, 0 errores
-git diff --name-only      # solo archivos de tu bloque
+npx tsc --noEmit                       # 0 errores
+npx eslint src                         # 0 warnings, 0 errores
+git branch --show-current              # tu rama feature/integranteN-...
+git diff --name-only main...HEAD       # solo archivos de tu bloque
+git log --oneline main..HEAD           # tus commits
 ```
 
 Además:
@@ -1030,10 +1411,14 @@ Además:
 - [ ] No hay texto tapado por la barra de gestos ni por el teclado.
 - [ ] Todos los estados de la matriz están implementados.
 - [ ] Todos los targets son ≥ 48×48.
+- [ ] Se probó con **TalkBack** en el A56 y se adjunta evidencia (§13).
 - [ ] Todos los textos salen del diccionario canónico.
 - [ ] No hay `any`, `@ts-ignore`, `eslint-disable`, `console.log`, `TODO`.
 - [ ] No se tocó ningún archivo del lead ni de otro integrante.
-- [ ] No se tocó `package.json` ni `package-lock.json`.
+- [ ] No se tocó `package.json` ni `package-lock.json`; se usó `npm ci`, no `npm install <paquete>`.
+- [ ] La rama es la correcta, fue creada desde `main` y **no** se commiteó en `main`.
+- [ ] La venta/descarte de prueba llegó a Supabase y actualizó `batches.current_stock`.
+- [ ] Se corrió la matriz de regresión de §5.3 y se adjunta la evidencia.
 - [ ] Se adjunta captura antes/después y comparación con Figma.
 
 ---
@@ -1046,7 +1431,7 @@ Además:
 | `fontSize: 24` “porque Figma lo tiene” | El canónico es `h1` 22. |
 | Copiar `Inter` de Figma | La app usa Plus Jakarta Sans. |
 | `width: 353` fijo | En 384 dp se desborda. Usar `100%` + gutter. |
-| `position: 'absolute'` para layout | Se rompe con fuente grande y safe areas. |
+| `position: 'absolute'` para layout | Se rompe con fuente grande y safe areas. Única excepción aprobada: el pill `done` del `SyncBanner` y los overlays de scrim. |
 | `Alert.alert` | No es el patrón visual de la app. |
 | Modal sin scrim | Rompe figura/fondo y accesibilidad. |
 | Botón de 44 sin `hitSlop` | No cumple Fitts ni WCAG. |
@@ -1055,9 +1440,11 @@ Además:
 | Contadores hardcodeados | Inconsistentes entre pantallas. |
 | Duplicar un `Card` o `Button` | Frankenstein visual. |
 | Editar `theme.ts` para “probar” | Rompe a los otros 5. |
-| `npm install` para un icono | Rompe el candado de versionado. |
-| Commit propio | El lead pierde el control de la integración. |
+| `npm install <paquete>` para un icono | Rompe el candado de versionado. La instalación inicial es `npm ci`. |
+| Commitear en `main` o mergear tu rama | El lead pierde el control de la integración. |
 | “Ya se ve bien en web” | La demo es en el A56. |
+| Entregar sin probar regresiones | Tu pantalla anda, pero rompiste otra y nadie lo vio. |
+| `git add .` / `git add -A` | Mete archivos ajenos, `node_modules` o basura en tu commit. |
 
 Errores de Figma que **no** se copian:
 
@@ -1067,6 +1454,8 @@ Errores de Figma que **no** se copian:
 - Fechas 2025 → relativas.
 - Conteos 3/4/12 inconsistentes → calculados.
 - `519:3715` no es una pantalla: es el estado de error del sheet Descartar.
+- `519:5018` no se implementa: el modal de desconexión contradice el offline-first.
+- El botón X de los frames de sync no se copia: el aviso no tiene botones.
 - Títulos 24/26 → 22.
 - Pesos 800 → 700.
 - `Inter`/`FreeSans`/`Liberation Sans`/`Nimbus Sans` → Plus Jakarta Sans.
@@ -1079,7 +1468,7 @@ Errores de Figma que **no** se copian:
 ```
 src/
   app/
-    _layout.tsx              Stack + fuentes + SQLite + QueryClient
+    _layout.tsx              Stack + fuentes + SQLite + QueryClient + arranque del sync
     (tabs)/
       _layout.tsx            2 tabs
       index.tsx              Dashboard
@@ -1096,16 +1485,18 @@ src/
     Screen.tsx  AppHeader.tsx  ScreenHeader.tsx  Card.tsx  Badge.tsx  Button.tsx
     Chip.tsx  Sheet.tsx  ConfirmDialog.tsx  SuccessDialog.tsx
     UndoSnackbar.tsx  EmptyState.tsx  index.ts
-  components/SinConexionDialog.tsx      (Int 1)
+  components/SyncBanner.tsx             (Int 4)
   components/FiltroStockSheet.tsx       (Int 5)
   components/FiltroHistorialSheet.tsx   (Int 6)
   constants/theme.ts
   hooks/use-color-scheme.ts  use-undo-snackbar.ts
   lib/sqlite.ts  sqlite.web.ts  supabase.ts
-  lib/format.ts  demo-data.ts  repository.ts  preferences.ts
+  lib/format.ts  demo-data.ts  repository.ts  preferences.ts  sync.ts  uuid.ts
   types/database.ts
 design/figma/                 congelado de Figma (solo lectura)
 design/fase0/                 base compartida lista para copiar (solo lead)
+scripts/seed-supabase.cjs     siembra/alinea los 18 lotes en Supabase (solo lead)
+scripts/canonical-demo.json   snapshot de los 18 lotes para el seed
 ```
 
 Rutas ya registradas: no hace falta tocar `_layout.tsx`.
@@ -1191,12 +1582,12 @@ las reglas críticas, el frame, el copy, los estados y los criterios de aceptaci
 
 ---
 
-### 23.1 Integrante 1 — Dashboard, Configuración y Sin conexión
+### 23.1 Integrante 1 — Dashboard y Configuración
 
 #### Misión
 
-Que Doña Elena entienda en 3 segundos qué necesita atención hoy, ajuste sus avisos y reciba un
-mensaje claro cuando una operación no se pudo guardar.
+Que Doña Elena entienda en 3 segundos qué necesita atención hoy y ajuste sus avisos. La
+conectividad **no es de este bloque**: la resuelve el `SyncBanner` de Int 4 (§9.1); acá solo se monta.
 
 #### Archivos que posee
 
@@ -1204,10 +1595,12 @@ mensaje claro cuando una operación no se pudo guardar.
 |---|---|
 | `src/app/(tabs)/index.tsx` | Reescribir completo |
 | `src/app/configuracion.tsx` | Reescribir completo |
-| `src/components/SinConexionDialog.tsx` | Crear |
 | `src/lib/preferences.ts` | Crear |
 
-No tocar ningún otro.
+No tocar ningún otro. `SyncBanner.tsx` es de Int 4; `lib/sync.ts` es del lead y solo se
+importa (`useSync`). No lo edites.
+
+**Rama:** `feature/integrante1-dashboard-config` (la crea el integrante desde `main`).
 
 #### Referencias Figma
 
@@ -1216,12 +1609,13 @@ No tocar ningún otro.
 | Dashboard | `519:4861` | `design/figma/specs/519-4861.md` | `design/figma/png/519-4861-dashboard.png` |
 | Dashboard sin alertas | `519:5091` | `design/figma/specs/519-5091.md` | `design/figma/png/519-5091-dashboard-sin-alertas.png` |
 | Configuración | `519:4932` | `design/figma/specs/519-4932.md` | `design/figma/png/519-4932-configuracion.png` |
-| Sin conexión | `519:5018` | `design/figma/specs/519-5018.md` | `design/figma/png/519-5018-sin-conexion.png` |
+
+> `519:5018` (Modal sin conexión) quedó **descartado**; no tiene dueño ni se implementa.
 
 #### 23.1.1 Dashboard — estructura
 
 ```tsx
-<Screen header={<AppHeader />}>
+<Screen header={<><AppHeader /><SyncBanner /></>}>
   {/* 1. Banner mostrador */}
   {/* 2. KPI Vencidos */}
   {/* 3. KPI Próximos a vencer */}
@@ -1285,7 +1679,7 @@ Estado vacío (`519:5091`), cuando `metrics.expired === 0 && metrics.near === 0`
 Estados obligatorios:
 
 - **Loading:** 3 `Skeleton` simples (bloques `Colors.field`, r12) mientras `useLots()` hidrata. No spinner de pantalla completa.
-- **Error de datos:** banner discreto con `WifiOff` y `Reintentar`.
+- **Conectividad:** la cubre `SyncBanner`; no uses `WifiOff` ni `Reintentar`.
 - **Pressed:** `activeOpacity 0.85` en KPIs, CTA y link.
 
 Accesibilidad:
@@ -1297,7 +1691,7 @@ Accesibilidad:
 #### 23.1.2 Configuración — estructura
 
 ```tsx
-<Screen header={<AppHeader back />}>
+<Screen header={<><AppHeader back /><SyncBanner /></>}>
   {/* Título Configuración */}
   {/* Card: Control de avisos + descripción */}
   {/* 3 filas con Switch: 60 / 30 / 15 días */}
@@ -1354,54 +1748,31 @@ Accesibilidad:
 - La fila completa es tocable y togglea (target ≥ 48).
 - El toast se anuncia con `AccessibilityInfo.announceForAccessibility`.
 
-#### 23.1.3 `SinConexionDialog`
-
-API:
-
-```tsx
-type Props = {
-  visible: boolean;
-  onRetry: () => void;
-  onCancel: () => void;
-  message?: string;   // default canónico
-};
-```
-
-Visual:
-
-- `Modal` transparente + scrim `Colors.scrim`.
-- Tarjeta 326×353 (máx. `340`), `Colors.surface`, `Radius.xl`, `padding: Spacing.xxl`, centrada.
-- Icono `WifiOff` 40 en círculo 72 `Colors.critical.bg`.
-- Título 20 bold: `Sin conexión al servidor`.
-- Cuerpo 14 regular: `No se pudo guardar la operación. El stock no cambió. Revisa la conexión y vuelve a intentarlo.`
-- `Button` primario `Reintentar`; `Button` secundario `Cancelar`.
-- `accessibilityViewIsModal`, foco inicial en el título.
-
-Se usa desde Venta y Descarte (Int 4). No bloquea la app completa: solo la operación.
-
-#### 23.1.4 Criterios de aceptación
+#### 23.1.3 Criterios de aceptación
 
 - [ ] Dashboard reproduce el orden y las medidas del spec.
 - [ ] Los 3 contadores salen de `useMetrics()`; ninguno está hardcodeado.
 - [ ] El estado sin alertas aparece con 0 vencidos y 0 próximos.
 - [ ] Los KPIs navegan con el tab correcto.
 - [ ] Configuración persiste los 3 switches y muestra el toast.
-- [ ] `SinConexionDialog` se abre, reintenta y cancela.
+- [ ] `SyncBanner` está montado bajo `AppHeader` en Dashboard y Configuración (sin lógica propia).
 - [ ] Nada queda tapado por la tab bar ni por los gestos.
 - [ ] `tsc` y `eslint` limpios.
 
-#### 23.1.5 Prohibiciones locales
+#### 23.1.4 Prohibiciones locales
 
 - No usar `ScrollView` con `paddingTop` manual.
 - No reemplazar `AppHeader` por un `View` propio.
 - No guardar preferencias en memoria solamente.
 - No mostrar `Alert.alert` para términos ni para el toast.
+- No crear ningún modal o aviso de conexión; eso es `SyncBanner` (Int 4).
 - No tocar `por-vencer.tsx` para “arreglar” el tab; se lo pide a Int 2.
 
-#### 23.1.6 Handoff
+#### 23.1.5 Handoff
 
-Entregar: captura del Dashboard normal y vacío, captura de Configuración, captura del modal,
-lista de archivos tocados, resultado de `tsc`/`eslint`, desviaciones.
+Entregar: captura del Dashboard normal y vacío, captura de Configuración, captura con el
+`SyncBanner` visible, lista de archivos tocados, `tsc`/`eslint`, resultado de la matriz de
+regresión §5.3, desviaciones.
 
 ---
 
@@ -1419,6 +1790,8 @@ y reciba una confirmación inequívoca con la posibilidad de deshacer.
 | `src/app/por-vencer.tsx` | Reescribir completo |
 | `src/app/venta-exitosa.tsx` | Reescribir completo |
 
+**Rama:** `feature/integrante2-por-vencer` (la crea el integrante desde `main`).
+
 #### Referencias Figma
 
 | Pantalla | Frame ID | Spec | PNG |
@@ -1431,7 +1804,7 @@ y reciba una confirmación inequívoca con la posibilidad de deshacer.
 #### 23.2.1 Por Vencer — estructura
 
 ```tsx
-<Screen header={<AppHeader back />}>
+<Screen header={<><AppHeader back /><SyncBanner /></>}>
   {/* Título + badge críticos */}
   {/* Subtítulo */}
   {/* Tabs 15 / 30 / 60 */}
@@ -1510,7 +1883,8 @@ Undo:
 
 - Al volver de una venta o descarte con `?undo=1`, mostrar `UndoSnackbar` con
   `Listo, quitado de la lista` y `DESHACER` durante 5 s (`useUndoSnackbar`).
-- `DESHACER` llama a `undoLast()` y restaura la tarjeta.
+- `DESHACER` llama a `undoLast()` y restaura la tarjeta. `repository.ts` avisa al sync solo;
+  la pantalla no llama `notifyLocalChange()`.
 - El snackbar va sobre la tab bar (`bottom: insets.bottom + 68`).
 
 Link historial:
@@ -1523,7 +1897,7 @@ Estados:
 
 - **Loading:** 3 skeletons de tarjeta (`minHeight: 113`, fondo `field`).
 - **Empty:** el de la banda.
-- **Error de datos:** `EmptyState` con `WifiOff` y `Reintentar`.
+- **Conectividad:** la cubre `SyncBanner`; no uses `WifiOff` ni `Reintentar`.
 - **Pressed:** tarjeta `activeOpacity 0.9`; botones 0.85.
 
 Accesibilidad:
@@ -1582,6 +1956,7 @@ Agregar `origin?: 'vencer' | 'stock'` a los params de éxito.
 - [ ] El estado vacío conserva tabs y link.
 - [ ] El snackbar de undo dura 5 s y restaura el lote.
 - [ ] Venta exitosa muestra los 4 datos y permite deshacer 5 s.
+- [ ] `SyncBanner` está montado bajo `AppHeader` (sin lógica propia).
 - [ ] `tsc` y `eslint` limpios.
 
 #### 23.2.4 Prohibiciones locales
@@ -1594,7 +1969,8 @@ Agregar `origin?: 'vencer' | 'stock'` a los params de éxito.
 
 #### 23.2.5 Handoff
 
-Capturas de las 3 bandas + vacío + venta exitosa, lista de archivos, `tsc`/`eslint`, desviaciones.
+Capturas de las 3 bandas + vacío + venta exitosa, lista de archivos, `tsc`/`eslint`, resultado
+de la matriz de regresión §5.3, desviaciones.
 
 ---
 
@@ -1611,6 +1987,8 @@ suficiente (stock, lote, vencimiento, acción sugerida) y sin riesgo de vender a
 |---|---|
 | `src/app/detalle/[id].tsx` | Reescribir completo |
 
+**Rama:** `feature/integrante3-detalle-producto` (la crea el integrante desde `main`).
+
 #### Referencias Figma
 
 | Pantalla | Frame ID | Spec | PNG |
@@ -1623,7 +2001,7 @@ suficiente (stock, lote, vencimiento, acción sugerida) y sin riesgo de vender a
 #### 23.3.1 Estructura
 
 ```tsx
-<Screen header={<AppHeader back />}>
+<Screen header={<><AppHeader back /><SyncBanner /></>}>
   {/* Banner de estado (normal / vencido / sin stock) */}
   {/* Título + badge Prioridad 1 + subtítulo */}
   {/* Card MEDICAMENTO */}
@@ -1710,7 +2088,8 @@ Reglas:
 - Si `useLot(id)` no existe → `EmptyState` «Lote no encontrado» + `Volver al listado`.
 - El detalle no ofrece vender si `days < 0` o `stock === 0`.
 - Los CTA se deshabilitan durante la mutación (`loading`).
-- Si la mutación falla → `SinConexionDialog` (Int 1) con `Reintentar`/`Cancelar`.
+- `discardBatch` **nunca falla por red**: guarda local y encola el outbox. El sync se dispara
+  solo desde `repository.ts`. No hay modal de conexión ni llamadas a `notifyLocalChange()`.
 
 Accesibilidad:
 
@@ -1726,6 +2105,7 @@ Accesibilidad:
 - [ ] Vencido y sin stock bloquean la venta.
 - [ ] El popup muestra qty/motivo/restante reales y confirma el descarte.
 - [ ] El descarte navega a `descarte-exitoso` con los params completos.
+- [ ] `SyncBanner` está montado; el descarte encola el outbox sin llamadas extra.
 - [ ] `tsc` y `eslint` limpios.
 
 #### 23.3.3 Prohibiciones locales
@@ -1734,20 +2114,23 @@ Accesibilidad:
 - No usar `Alert.alert` para confirmar.
 - No mostrar «Vence en 15 días» si el lote está vencido.
 - No permitir vender con stock 0.
+- No crear ningún modal o aviso de conexión: lo cubre `SyncBanner` (Int 4).
 - No tocar `venta/[id].tsx` ni `descartar/[id].tsx`.
 
 #### 23.3.4 Handoff
 
-Capturas de las 3 variantes + popup, lista de archivos, `tsc`/`eslint`, desviaciones.
+Capturas de las 3 variantes + popup, lista de archivos, `tsc`/`eslint`, resultado de la matriz
+de regresión §5.3, desviaciones.
 
 ---
 
-### 23.4 Integrante 4 — Registrar venta, Descartar y confirmaciones
+### 23.4 Integrante 4 — Registrar venta, Descartar, confirmaciones y aviso de sincronización
 
 #### Misión
 
-Que Doña Elena registre una salida de stock sin errores: cantidad válida, motivo obligatorio,
-confirmación clara y actualización inmediata del inventario local.
+Que Doña Elena registre una salida de stock sin errores (cantidad válida, motivo obligatorio,
+confirmación clara y actualización inmediata del inventario local) y que la app le muestre, sin
+bloquearla, el estado de la sincronización automática.
 
 #### Archivos que posee
 
@@ -1755,6 +2138,14 @@ confirmación clara y actualización inmediata del inventario local.
 |---|---|
 | `src/app/venta/[id].tsx` | Reescribir completo |
 | `src/app/descartar/[id].tsx` | Reescribir completo |
+| `src/components/SyncBanner.tsx` | Crear (solo UI) |
+| `src/lib/sync.ts` | **No editar**: ya está implementado por el lead |
+
+No tocar ningún otro. `SyncBanner` lo montan los demás integrantes (una línea, §9.1).
+El motor de sync (`lib/sync.ts`) y el outbox (`repository.ts`) ya funcionan; Int 4 solo
+dibuja el aviso.
+
+**Rama:** `feature/integrante4-operaciones-venta` (la crea el integrante desde `main`).
 
 #### Referencias Figma
 
@@ -1766,35 +2157,72 @@ confirmación clara y actualización inmediata del inventario local.
 | Confirmar venta | `519:5930` | `design/figma/specs/519-5930.md` | `design/figma/png/519-5930-confirmar-venta.png` |
 | Descartar | `519:4718` | `design/figma/specs/519-4718.md` | `design/figma/png/519-4718-descartar.png` |
 | Descartar · cantidad inválida (referencia) | `519:3715` | `design/figma/specs/519-3715.md` | `design/figma/png/519-3715-venta-variante-rota.png` |
+| Sync · syncing | `534:592` | `design/figma/specs/534-592.md` | `design/figma/png/534-592-sync-sincronizando.png` ⏳ |
+| Sync · offline | `545:1646` | `design/figma/specs/545-1646.md` | `design/figma/png/545-1646-sync-offline.png` ⏳ |
+| Sync · done | `545:2170` | `design/figma/specs/545-2170.md` | `design/figma/png/545-2170-sync-completado.png` ⏳ |
 
 > `519:3715` **no** es una pantalla aparte: es el estado «cantidad inválida» del sheet
 > Descartar (título «Descartar», chips de motivo, CTA «Confirmar descarte»). Se usa como
 > referencia visual del estado de error. Sus bugs de copy se corrigen: `CANTIDAD A Descartar`
 > → `CANTIDAD A DESCARTAR *` y `Ajustar al maximo disponible` con cantidad 0 → `Usar 1 unidad`.
 
+#### 23.4.0 Aviso de sincronización (`SyncBanner`)
+
+El motor **ya está implementado** en `src/lib/sync.ts` (Lead): estado real, outbox, Supabase,
+5 s de gracia e idempotencia. Int 4 implementa **solo la UI**:
+
+- `SyncBanner.tsx`: renderiza el banner (offline/syncing) y el pill (done) leyendo `useSync()`.
+  Se monta como fragmento bajo `AppHeader`. Sin props, sin botones, sin `Modal`.
+- No llama `notifyLocalChange()`: `repository.ts` ya lo hace después de cada mutación y undo.
+- No escribe en Supabase ni duplica el motor de sync.
+
+Estados, copy, medidas y prohibiciones: ver §9.1. No repetir acá.
+
 #### 23.4.1 Estructura base de ambos sheets
 
 ```tsx
-<View style={{ flex: 1 }}>
-  <Pressable style={[StyleSheet.absoluteFill, { backgroundColor: Colors.scrim }]} onPress={router.back} />
-  <KeyboardAvoidingView
-    behavior={Platform.OS === 'android' ? 'padding' : undefined}
-    style={{ flex: 1, justifyContent: 'flex-end' }}
+<View style={{ flex: 1, justifyContent: 'flex-end', backgroundColor: Colors.scrim }}>
+  <TouchableOpacity
+    style={StyleSheet.absoluteFill}
+    onPress={() => router.back()}
+    accessibilityLabel="Cerrar"
+  />
+  <View
+    style={[
+      { flex: 1, justifyContent: 'flex-end' },
+      { transform: [{ translateY: -keyboardHeight }] },
+    ]}
   >
-    <Sheet title="..." footer={...}>
-      {/* contenido */}
+    <Sheet
+      title="..."
+      onRequestClose={() => router.back()}
+      footer={...}
+    >
+      <ScrollView
+        style={keyboardVisible ? { maxHeight: 220 } : undefined}
+        contentContainerStyle={{ gap: Spacing.md }}
+        keyboardShouldPersistTaps="handled"
+        showsVerticalScrollIndicator={false}
+      >
+        {/* contenido */}
+      </ScrollView>
     </Sheet>
-  </KeyboardAvoidingView>
+  </View>
 </View>
 ```
+
+`keyboardHeight` y `keyboardVisible` salen de `Keyboard.addListener('keyboardDidShow'/'keyboardDidHide')`.
+No usar `KeyboardAvoidingView`: en `transparentModal` el teclado no redimensiona la pantalla y el sheet queda tapado.
 
 Reglas del sheet:
 
 - Ancho completo; esquinas superiores `Radius.sheet` (20).
 - `paddingBottom: insets.bottom + Spacing.xxl` (ya lo hace `Sheet`).
 - El scrim cubre toda la pantalla y cierra al tocar.
-- El sheet **no** scrollea con el teclado; el CTA queda visible.
-- `presentation: 'transparentModal'` ya está configurado en `_layout.tsx`.
+- `Sheet` anima la entrada (280 ms) y se puede **arrastrar hacia abajo** desde el
+  header/grabber para cerrar. Pasar `onRequestClose`.
+- Con teclado, el cuerpo usa `ScrollView` con `maxHeight` corto y el footer/CTA queda fijo.
+- `presentation: 'transparentModal'` y `animation: 'fade'` ya están configurados en `_layout.tsx`.
 - Prohibido usar `Modal` de RN aquí: la ruta ya es modal.
 
 #### 23.4.2 Registrar venta
@@ -1900,7 +2328,8 @@ try {
     params: { name, lot, qty, unit, total: qty * price, remaining: max - qty, origin },
   });
 } catch {
-  setOffline(true);
+  // sellBatch solo rechaza por validación o por vencido; la red no interrumpe.
+  setQuantityError('Cantidad no válida. Ingresa un número entre 1 y ' + max + ' unidades.');
 } finally {
   setSaving(false);
 }
@@ -1908,7 +2337,10 @@ try {
 
 - `origin` se lee de `useLocalSearchParams` (`'stock' | 'vencer'`, default `'vencer'`).
 - Mientras guarda: `Button loading` y `disabled`; el sheet no se cierra.
-- Si falla: `SinConexionDialog` de Int 1, con `onRetry` = reintentar y `onCancel` = cerrar.
+- **Sin red no falla:** la venta se guarda local y el `SyncBanner` muestra los pendientes.
+  No hay modal, ni `Reintentar`, ni `setOffline`.
+- `setQuantityError` es el mismo estado local que pinta la tabla de errores de cantidad; el
+  `catch` es defensivo (la validación ya bloqueó los casos posibles).
 - Anunciar errores de validación con `AccessibilityInfo.announceForAccessibility`.
 
 Cancelar:
@@ -1961,10 +2393,11 @@ Reglas:
   («Ajustar al mínimo disponible (200 unidades)» con cantidad 0).
 - Motivo obligatorio: uno de `EXPIRED`, `DAMAGED_DETERIORATED`, `RETURN_TO_SUPPLIER`.
   - Labels: `Vencido`, `Dañado / Deteriorado`, `Devolución a droguería`.
-- Si no hay motivo al confirmar:
-  - mostrar `Debes seleccionar un motivo obligatorio para la baja.`
-  - borde de chips en `critical.border` (`Chip error`).
-  - no abrir confirmación.
+- Si no hay motivo:
+  - mostrar la caja `critical.bg` con borde `critical.border` dentro de la tarjeta de motivo:
+    `Debes seleccionar un motivo obligatorio para la baja.`
+  - los chips mantienen su borde normal (Figma `519:4718`); no se pintan todos de rojo.
+  - el CTA queda deshabilitado y no se ejecuta el descarte.
 - Si el lote está vencido, preseleccionar `Vencido`.
 - `Vencido` se muestra deshabilitado si `days >= 0`? No: se puede descartar un lote no vencido por daño.
   Mantener los 3 disponibles.
@@ -1972,10 +2405,11 @@ Reglas:
 Confirmación:
 
 - El frame `519:4718` no tiene popup: el CTA confirma directo.
-- Al confirmar: `discardBatch(id, qty, reason)` → `router.replace('/descarte-exitoso', params)`.
+- Al confirmar: `await discardBatch(id, qty, reason)` → `router.replace('/descarte-exitoso', params)`.
+  El outbox y el sync los maneja `repository.ts`.
 - Params: `name`, `lot`, `qty`, `unit`, `total = qty * price`, `remaining = stock - qty`,
   `reason`, `origin`.
-- Mismo manejo de `saving` y `SinConexionDialog`.
+- Mismo manejo de `saving` que venta. **Sin red no falla**: guarda local; no hay modal.
 
 Accesibilidad:
 
@@ -1992,7 +2426,9 @@ Accesibilidad:
 - [ ] Confirmar venta muestra el popup con los 4 datos.
 - [ ] El descarte exige motivo y muestra el error si falta.
 - [ ] Las mutaciones actualizan stock y movimientos; se reflejan en Stock/Por Vencer/Historial.
-- [ ] El fallo de red abre `SinConexionDialog` sin perder lo escrito.
+- [ ] Vender/descartar sin red guarda local, navega al éxito y NO muestra ningún modal.
+- [ ] `SyncBanner` muestra `offline` (con el conteo correcto) → `syncing` → `done` sin botones.
+- [ ] No hay llamadas a `notifyLocalChange()` en las pantallas: el sync se dispara solo.
 - [ ] `tsc` y `eslint` limpios.
 
 #### 23.4.5 Prohibiciones locales
@@ -2002,12 +2438,15 @@ Accesibilidad:
 - No cerrar el sheet antes de que termine `sellBatch`/`discardBatch`.
 - No usar `parseInt` sin validar `NaN`.
 - No permitir `qty = 0` ni decimales.
+- No crear `SinConexionDialog`, modales de red, `Reintentar`, ni botones de sync.
+- No usar `expo-network`/NetInfo ni instalar nada.
 - No tocar `detalle/[id].tsx` ni las pantallas de éxito.
 
 #### 23.4.6 Handoff
 
 Capturas: venta default, venta con cantidad excedida, venta con cero, confirmación, descarte default,
-descarte sin motivo. Lista de archivos, `tsc`/`eslint`, desviaciones.
+descarte sin motivo, y los 3 estados del `SyncBanner` (offline, syncing, done). Lista de archivos,
+`tsc`/`eslint`, resultado de la matriz de regresión §5.3, desviaciones.
 
 ---
 
@@ -2025,6 +2464,8 @@ ubicación, forma o estado, y abra el detalle sin perder el contexto de búsqued
 | `src/app/(tabs)/stock.tsx` | Reescribir completo |
 | `src/components/FiltroStockSheet.tsx` | Crear |
 
+**Rama:** `feature/integrante5-stock-fefo` (la crea el integrante desde `main`).
+
 #### Referencias Figma
 
 | Pantalla | Frame ID | Spec | PNG |
@@ -2037,7 +2478,7 @@ ubicación, forma o estado, y abra el detalle sin perder el contexto de búsqued
 #### 23.5.1 Stock — estructura
 
 ```tsx
-<Screen header={<AppHeader />}>
+<Screen header={<><AppHeader /><SyncBanner /></>}>
   {/* Título Stock */}
   {/* Buscador + botón Filtros */}
   {/* Chips de filtros activos */}
@@ -2109,7 +2550,7 @@ Estados:
 
 - **Loading:** 3 skeletons de tarjeta.
 - **Empty:** el descrito.
-- **Error de datos:** `EmptyState` con `WifiOff` y `Reintentar`.
+- **Conectividad:** la cubre `SyncBanner`; no uses `WifiOff` ni `Reintentar`.
 
 Accesibilidad:
 
@@ -2178,6 +2619,7 @@ Accesibilidad:
 - [ ] El sheet aplica y restablece filtros; el contador coincide con la lista.
 - [ ] El estado vacío muestra el query real.
 - [ ] Al volver del detalle se conserva el estado.
+- [ ] `SyncBanner` está montado bajo `AppHeader` (sin lógica propia).
 - [ ] `tsc` y `eslint` limpios.
 
 #### 23.5.4 Prohibiciones locales
@@ -2190,8 +2632,8 @@ Accesibilidad:
 
 #### 23.5.5 Handoff
 
-Capturas: Stock default, autocompletado, sin resultados, filtro abierto y aplicado. `tsc`/`eslint`,
-desviaciones.
+Capturas: Stock default, autocompletado, sin resultados, filtro abierto y aplicado.
+`tsc`/`eslint`, resultado de la matriz de regresión §5.3, desviaciones.
 
 ---
 
@@ -2210,6 +2652,8 @@ tipo y motivo, y confirme un descarte con su impacto económico.
 | `src/components/FiltroHistorialSheet.tsx` | Crear |
 | `src/app/descarte-exitoso.tsx` | Reescribir completo |
 
+**Rama:** `feature/integrante6-historial-bajas` (la crea el integrante desde `main`).
+
 #### Referencias Figma
 
 | Pantalla | Frame ID | Spec | PNG |
@@ -2222,7 +2666,7 @@ tipo y motivo, y confirme un descarte con su impacto económico.
 #### 23.6.1 Historial — estructura
 
 ```tsx
-<Screen header={<AppHeader back />}>
+<Screen header={<><AppHeader back /><SyncBanner /></>}>
   {/* Título + botón Filtros */}
   {/* Buscador */}
   {/* Chips activos */}
@@ -2290,7 +2734,7 @@ Vacío (`519:4263`):
 Estados:
 
 - **Loading:** 4 skeletons de tarjeta.
-- **Error:** `EmptyState` con `WifiOff` y `Reintentar`.
+- **Conectividad:** la cubre `SyncBanner`; no uses `WifiOff` ni `Reintentar`.
 
 Accesibilidad:
 
@@ -2385,6 +2829,7 @@ Reglas:
 - [ ] El rango personalizado valida el formato.
 - [ ] El estado vacío aparece y se puede limpiar.
 - [ ] Descarte exitoso muestra resumen, motivo y stock restante; permite deshacer 5 s.
+- [ ] `SyncBanner` está montado bajo `AppHeader`; el undo lo maneja `repository.ts`.
 - [ ] `tsc` y `eslint` limpios.
 
 #### 23.6.5 Prohibiciones locales
@@ -2397,7 +2842,8 @@ Reglas:
 
 #### 23.6.6 Handoff
 
-Capturas: historial default, filtro abierto, vacío, descarte exitoso. `tsc`/`eslint`, desviaciones.
+Capturas: historial default, filtro abierto, vacío, descarte exitoso. `tsc`/`eslint`, resultado
+de la matriz de regresión §5.3, desviaciones.
 
 ---
 

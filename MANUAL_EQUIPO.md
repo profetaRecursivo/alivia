@@ -1,5 +1,11 @@
 # 💊 MANUAL DE DESARROLLO Y GUÍA PASO A PASO — PROYECTO ALIVIA
 
+> ⛔ **OBSOLETO.** Este manual se conserva solo como referencia histórica. La fuente única y
+> vigente es **`PROMPT_AGENTES.md`**, junto con `design/figma/`. **No ejecutes los comandos de
+> este manual** (`npm install`, `git checkout`, etc.): usá el flujo Git de §5.2 y el testing de
+> §5.3 del `PROMPT_AGENTES.md`. En particular, el modal «Sin Conexión al Servidor» que aparece
+> más abajo **fue descartado**: el aviso es el `SyncBanner` no bloqueante (Int 4, §9.1).
+
 > **Para:** Equipo de Desarrollo StackOverflow (Integrantes 1, 2, 3, 4, 5 y 6)  
 > **Proyecto:** ALIVIA — Asistente de Gestión Farmacéutica y Vencimientos  
 > **Materia:** Interacción Humano-Computador (IHC) — UMSS  
@@ -104,8 +110,8 @@ Cada uno tiene **su propia rama de Git**. Nadie toca la rama de otro compañero 
 git clone <url-del-repositorio>
 cd alivia-mobile
 
-# 2. Instalar librerías
-npm install
+# 2. Instalar librerías existentes (respeta el lockfile)
+npm ci
 
 # 3. Crear tu archivo de variables de entorno
 cp .env.example .env
@@ -142,11 +148,9 @@ npm start
    - Cabecera con título `Configuración de Alertas` (`#1B5E7B`).
    - Sliders o switches de umbrales: Alerta crítica (15 días), Alerta media (30 días), Alerta preventiva (60 días).
    - Switch de *Vibración y Notificaciones locales*.
-4. **`Modal - Sin Conexión al Servidor (Alivia) (Color)`**:
-   - PopUp con ícono de Wifi tachado (`#D97706`).
-   - Título: *"Modo Sin Conexión Activo"*.
-   - Mensaje tranquilizador: *"Puedes seguir registrando ventas y descartes normalmente. Los cambios se sincronizarán en cuanto vuelva la red"*.
-   - Botón `Entendido / Continuar Offline` (`#1B5E7B`).
+4. ~~**`Modal - Sin Conexión al Servidor (Alivia) (Color)`**~~ **DESCARTADO.** Ya no se
+   implementa como modal. El aviso es el `SyncBanner` no bloqueante (Int 4, §9.1 de
+   `PROMPT_AGENTES.md`): «Sin conexión» + cambios pendientes, sin botones.
 
 ---
 

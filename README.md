@@ -47,7 +47,7 @@ Abre una terminal y entra al proyecto:
 
 ```bash
 cd /home/profeta/Proyectos/alivia-mobile
-npm install
+npm ci        # instala exactamente lo del package-lock; se corre una sola vez
 ```
 
 ### Opción A — En el navegador (la más rápida)
@@ -162,18 +162,31 @@ Escala oficial: 36 cantidad · 28 KPI · 22 pantalla · 20 sheet · 18 marca · 
 
 ## 🔐 7. Variables de entorno (Supabase)
 
-Copia la plantilla y coloca tus credenciales reales:
+Copia la plantilla (ya trae la URL y la publishable key reales):
 
 ```bash
 cp .env.example .env
 ```
 
 ```env
-EXPO_PUBLIC_SUPABASE_URL=https://tu-proyecto.supabase.co
-EXPO_PUBLIC_SUPABASE_ANON_KEY=tu-anon-key-aqui
+EXPO_PUBLIC_SUPABASE_URL=https://guuzyuhufcuhlzqrangs.supabase.co
+EXPO_PUBLIC_SUPABASE_ANON_KEY=sb_publishable_...
 ```
 
-> Sin credenciales la app **igualmente se ve** (las pantallas usan datos mock). Las credenciales solo se necesitan cuando conectemos las consultas reales.
+> La **publishable/anon key** es pública y va en la app. La **secret/service_role key** NO va
+> en `.env` ni en `EXPO_PUBLIC_*`: solo se usa para el script de seed/administración.
+> Sin credenciales la app funciona local (SQLite), pero la sincronización real no llega a Supabase.
+
+### Sembrar/alinear los 18 lotes (solo lead)
+
+```bash
+SUPABASE_URL="https://guuzyuhufcuhlzqrangs.supabase.co" \
+SUPABASE_SECRET_KEY="sb_secret_..." \
+node scripts/seed-supabase.cjs
+```
+
+El script es idempotente: crea/actualiza productos y lotes, no borra ventas ni descartes.
+La app usa la **publishable key**; la secret solo vive en esa terminal.
 
 ---
 
@@ -182,24 +195,34 @@ EXPO_PUBLIC_SUPABASE_ANON_KEY=tu-anon-key-aqui
 1. **FEFO obligatorio:** primero sale el lote con `expiration_date` más cercana.
 2. **Vencidos bloqueados:** un lote vencido no se vende; solo se descarta.
 3. **Motivo obligatorio:** el descarte exige un motivo (`Vencido`, `Dañado`, `Devolución a droguería`).
-4. **Offline first:** se escribe primero en SQLite y `sync_outbox` sincroniza con Supabase al volver la red.
-5. **Deshacer:** toda venta/descarte muestra un snackbar de 5 s con `DESHACER`.
+4. **Offline first:** se escribe primero en SQLite y `sync_outbox` sincroniza automáticamente con Supabase al volver la red, sin botones ni modales. El estado se muestra con `SyncBanner`.
+5. **Deshacer:** toda venta/descarte muestra un snackbar de 5 s con `DESHACER`. El motor de sync espera 5 s, así que el undo cancela antes de llegar al servidor.
 
 ---
 
-## 🌿 9. Git por integrante
+## 🌿 9. Git y testing por integrante
+
+Cada integrante **crea su rama desde `main`** y trabaja solo ahí. Nunca se commitea en `main`.
 
 ```bash
-git checkout feature/integrante4-operaciones-venta
-# desarrollar solo los archivos asignados
-git add .
-git commit -m "feat(venta): bottom sheet y confirmacion de venta"
+git status
+git switch main
+git pull --ff-only origin main          # si hay remoto
+git switch -c feature/integrante4-operaciones-venta  # tu rama (si ya existe: git switch feature/...)
+# trabajar solo los archivos asignados
+git add src/app/venta/[id].tsx src/app/descartar/[id].tsx
+git commit -m "feat(venta): bottom sheet y confirmacion"
 ```
 
-Antes de subir, verifica que no rompiste nada:
+Antes de entregar, probá que no rompiste nada:
 
 ```bash
 npx tsc --noEmit
 npx eslint src
-npx expo-doctor
+git diff --name-only main...HEAD        # solo tus archivos
 ```
+
+Y corré el checklist de regresión de `PROMPT_AGENTES.md` §5.3: arranque de la app, navegación,
+tu pantalla, pantallas vecinas, teclado, safe area, offline→syncing→done, persistencia y que la
+venta/descarte de prueba haya llegado a Supabase.
+No mergees ni rebasees: el lead integra.

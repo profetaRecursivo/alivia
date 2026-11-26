@@ -8,17 +8,31 @@ type Props = {
   onPress?: () => void;
   /** Borde rojo cuando el grupo de chips está en error. */
   error?: boolean;
+  /** Rol semántico: botón suelto, radio de un grupo o checkbox. */
+  role?: 'button' | 'radio' | 'checkbox';
   style?: ViewStyle;
 };
 
 /** Chip de filtro / motivo. Área táctil ≥ 44 px (Ley de Fitts). */
-export function Chip({ label, selected = false, onPress, error = false, style }: Props) {
+export function Chip({
+  label,
+  selected = false,
+  onPress,
+  error = false,
+  role = 'button',
+  style,
+}: Props) {
+  const state =
+    role === 'radio' || role === 'checkbox'
+      ? { checked: selected }
+      : { selected };
+
   return (
     <TouchableOpacity
       activeOpacity={0.85}
       onPress={onPress}
-      accessibilityRole="button"
-      accessibilityState={{ selected }}
+      accessibilityRole={role}
+      accessibilityState={state}
       style={[
         styles.chip,
         selected && styles.chipSelected,

@@ -38,7 +38,7 @@ ROWS = [
     ('519:4861', 'dashboard', 'Dashboard', 'src/app/(tabs)/index.tsx', '1', 'default'),
     ('519:5091', 'dashboard-sin-alertas', 'Dashboard sin alertas', 'src/app/(tabs)/index.tsx', '1', 'empty'),
     ('519:4932', 'configuracion', 'Configuración', 'src/app/configuracion.tsx', '1', 'default'),
-    ('519:5018', 'sin-conexion', 'Modal sin conexión al servidor', 'src/components/SinConexionDialog.tsx', '1', 'error'),
+    ('519:5018', 'sin-conexion', 'Modal sin conexión (DESCARTADO)', '—', '—', 'descartado'),
     ('521:32', 'venta-exitosa', 'Venta registrada con éxito', 'src/app/venta-exitosa.tsx', '2', 'success'),
     ('519:5706', 'por-vencer', 'Por Vencer · 15 días', 'src/app/por-vencer.tsx', '2', 'default'),
     ('519:6029', 'por-vencer-30', 'Por Vencer · 30 días', 'src/app/por-vencer.tsx', '2', 'default'),
@@ -61,6 +61,9 @@ ROWS = [
     ('519:4523', 'filtro-historial', 'Filtro Historial', 'src/components/FiltroHistorialSheet.tsx', '6', 'default'),
     ('519:4263', 'historial-vacio', 'Historial · sin movimientos', 'src/app/historial.tsx', '6', 'empty'),
     ('521:250', 'descarte-exitoso', 'Descarte registrado con éxito', 'src/app/descarte-exitoso.tsx', '6', 'success'),
+    ('534:592', 'sync-sincronizando', 'Aviso sync · Syncing', 'src/components/SyncBanner.tsx', '4', 'sync'),
+    ('545:1646', 'sync-offline', 'Aviso sync · Offline', 'src/components/SyncBanner.tsx', '4', 'sync'),
+    ('545:2170', 'sync-completado', 'Aviso sync · Done (pill)', 'src/components/SyncBanner.tsx', '4', 'sync'),
 ]
 
 ANOM = {
@@ -75,6 +78,12 @@ ANOM = {
                   'Copy a corregir: «CANTIDAD A Descartar» → «CANTIDAD A DESCARTAR *».',
                   'Copy a corregir: «Ajustar al maximo disponible (200 unidades)» con cantidad 0 → «Usar 1 unidad».'],
     '519:3556': ['«Ajustar al mínimo disponible (200 unidades)» es incorrecto para cantidad 0.'],
+    '519:5018': ['DESCARTADO por offline-first: no crear SinConexionDialog ni modal de red.'],
+    '534:592': ['Estado syncing del aviso global; el banner va debajo de AppHeader, no en y=241.',
+                  'El botón X del frame se descarta: el aviso no tiene botones.'],
+    '545:1646': ['El nombre del frame dice «Sincronizando», pero el contenido es el estado offline.',
+                  'El botón X del frame se descarta: el aviso no tiene botones.'],
+    '545:2170': ['Duplica PorVencer solo para mostrar el pill «Todo sincronizado»; no es una pantalla.'],
 }
 
 SCALE_MAP = {36: 'hero', 28: 'display', 24: '— (canónico: h1 22)', 22: 'h1', 20: 'modalTitle',

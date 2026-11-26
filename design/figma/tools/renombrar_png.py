@@ -33,7 +33,6 @@ MAP = {
     '519:4932': ('Configuracion', '519-4932-configuracion.png'),
     '519:5018': ('Modal - Sin Conexión al Servidor', '519-5018-sin-conexion.png'),
     '521:32': ('PopUp: Venta Registrada con Éxito', '521-32-venta-exitosa.png'),
-    '519:5706': ('PorVencer', '519-5706-por-vencer.png'),
     '519:6029': ('PorVencer - Pestaña 30 días', '519-6029-por-vencer-30.png'),
     '519:5833': ('PorVencer - Pestaña Vacía', '519-5833-por-vencer-vacio.png'),
     '519:3884': ('Detalles del producto', '519-3884-detalle.png'),
@@ -65,6 +64,14 @@ AMBIGUOS = {
         ('519:3397', '519-3397-venta-cantidad-excedida.png'),
         ('519:3556', '519-3556-venta-cantidad-cero.png'),
         ('519:3715', '519-3715-venta-variante-rota.png'),
+    ],
+    'sincronizando cambios': [
+        ('534:592', '534-592-sync-sincronizando.png'),
+        ('545:1646', '545-1646-sync-offline.png'),
+    ],
+    'porvencer': [
+        ('519:5706', '519-5706-por-vencer.png'),
+        ('545:2170', '545-2170-sync-completado.png'),
     ],
 }
 
@@ -132,9 +139,11 @@ def main():
         for a in ambiguos:
             print('     ', a)
         print('  Destinos según MANIFEST.md:')
-        for fid, t in [p for lista in AMBIGUOS.values() for p in lista]:
-            print(f'      {t}   (frame {fid})')
-        print('  Los tres frames se llaman igual en Figma. Abrí cada uno y')
+        for grupo, lista in AMBIGUOS.items():
+            print(f'    · {grupo}:')
+            for fid, t in lista:
+                print(f'        {t}   (frame {fid})')
+        print('  Los frames de cada grupo se llaman igual en Figma. Abrí cada uno y')
         print('  exportalo por separado, o compará contra specs/ antes de renombrar.')
 
     if desconocidos:

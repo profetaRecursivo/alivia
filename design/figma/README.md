@@ -74,15 +74,16 @@ Lucide indicado en `PROMPT_AGENTES.md`.
 
 La API de Figma devolvió `429` con `x-figma-rate-limit-type: low` y
 `retry-after: 399448` para `GET /v1/images`. El plan del archivo es **Starter** y la
-exportación de imágenes por API está bloqueada (`api_paywall`). El JSON de los 26 frames sí se
-descargó completo y es la fuente de los specs.
+exportación de imágenes por API está bloqueada (`api_paywall`). El JSON de los 26 frames
+originales se descargó completo; el de los 3 frames de sync se reconstruyó del árbol de capas
+porque la API quedó limitada. Ambos son la fuente de los specs.
 
 ### Export manual (5 minutos, una sola vez)
 
 1. Abrir el archivo en Figma Desktop o web.
-2. En el panel de capas, seleccionar los 26 frames listados en `MANIFEST.md`
+2. En el panel de capas, seleccionar los 29 frames listados en `MANIFEST.md`
    (todos los que terminan en `(COLOR)`).
-3. Panel derecho → **Export** → `+` → **PNG**, escala **1x** → **Export 26 layers**.
+3. Panel derecho → **Export** → `+` → **PNG**, escala **1x** → **Export 29 layers**.
 4. Descomprimir el `.zip` dentro de `design/figma/png/`.
 5. Renombrar con el script:
 
@@ -93,6 +94,9 @@ python3 design/figma/tools/renombrar_png.py design/figma/png
 El script usa el nombre de capa de Figma y lo mapea al nombre esperado
 (`<id>-<slug>.png`). Acepta el sufijo ` (COLOR)` / ` (Color)` / ` (Alivia)`, los acentos y
 espacios extra.
+
+> Los tres frames de sincronización (`534:592`, `545:1646`, `545:2170`) se exportan también;
+son estados del banner, no pantallas. Si no se exportan, los specs ya tienen todo lo necesario.
 
 > Los tres frames «Registrar Venta - Cantidad No Valida» (`519:3397`, `519:3556`, `519:3715`)
 > se llaman igual en Figma. El script **no adivina**: los detecta, los deja con su nombre y te
@@ -110,6 +114,11 @@ FIGMA_TOKEN=$(cat ~/.config/alivia/figma_token) \
 
 El script no agrega dependencias al proyecto (solo `urllib` de Python 3). Vuelve a generar
 `json/`, `specs/`, `MANIFEST.md` y `TOKENS_AUDIT.md`. Los PNG siguen siendo manuales.
+
+> ⚠️ El `MANIFEST.md` actual tiene secciones escritas a mano (frames descartados, notas de
+> sync). El generador las reemplaza por una tabla plana: si lo volvés a correr, restaurá esas
+> secciones desde Git o a mano. Los `specs/` de los 3 frames de sync también se regenerarían
+> sin las notas de implementación; conservá las actuales.
 
 ---
 
@@ -136,3 +145,11 @@ Sin ese par de capturas, la pantalla no se acepta.
 - `519:4861` dice «ATÉNCION INMEDIATA»: error de copy.
 - Fechas «29 de Mayo, 2025»: reemplazadas por fechas relativas.
 - Conteos 3/4/12 inconsistentes: se calculan en runtime desde los datos.
+- `519:5018` (Modal sin conexión) quedó **descartado** por el offline-first. No se implementa
+  como modal; el aviso es el banner `SyncBanner` (Int 4). Se conserva el spec por trazabilidad.
+- `534:592`, `545:1646`, `545:2170`: son **estados del aviso de sincronización**, no pantallas.
+  - `534:592` = `syncing`; `545:1646` = `offline` (aunque su capa se llame «Sincronizando»);
+    `545:2170` = `done` (duplica Por Vencer solo para mostrar el pill verde).
+  - El banner está dibujado a `y=241`, sobre la barra DESHACER. En la app va fijo debajo de
+    `AppHeader`; no se replica esa posición.
+  - El botón X de los frames **se omite**: el aviso no tiene botones ni cierre manual.

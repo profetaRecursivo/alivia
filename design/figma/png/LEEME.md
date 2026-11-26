@@ -1,9 +1,12 @@
 # PNG de Figma
 
-**Estado: 26/26 exportados y renombrados.**
+**Estado: 29/29 exportados y renombrados.**
 
 Los nombres siguen el patrón `<frame-id>-<slug>.png` y coinciden con la columna
 «PNG esperado» de `../MANIFEST.md`.
+
+> Los 3 PNG de sync (`534:592`, `545:1646`, `545:2170`) ya están en la carpeta. El
+> `SyncBanner` se implementó con sus specs y se verificó contra esas capturas.
 
 ## Si hay que re-exportar
 
@@ -21,6 +24,11 @@ python3 design/figma/tools/renombrar_png.py design/figma/png
 > - `519-3397-venta-cantidad-excedida.png` → venta, cantidad 250 de 200.
 > - `519-3556-venta-cantidad-cero.png` → venta, cantidad 0.
 > - `519-3715-venta-variante-rota.png` → descarte, cantidad 0 (referencia del estado de error).
+>
+> Los frames de sync también comparten nombre: `534:592` y `545:1646` se llaman «Sincronizando
+> Cambios» (syncing y offline), y `545:2170` se llama «PorVencer» como `519:5706` (done).
+> El script los marca como ambiguos; renombrar a mano a `534-592-sync-sincronizando.png`,
+> `545-1646-sync-offline.png` y `545-2170-sync-completado.png`.
 
 Las imágenes incluyen el marco decorativo del dispositivo y su sombra, por eso miden más que
 390×844. Para medidas y tokens mandan `../specs/<id>.md`, no el tamaño del PNG.

@@ -1,0 +1,2881 @@
+{
+ "id": "534-592:0",
+ "name": "Sincronizando Cambios (Color)",
+ "type": "FRAME",
+ "absoluteBoundingBox": {
+  "x": 8168,
+  "y": 3125,
+  "width": 390,
+  "height": 844
+ },
+ "children": [
+  {
+   "id": "534-592:1",
+   "name": "Por Vencer",
+   "type": "TEXT",
+   "absoluteBoundingBox": {
+    "x": 8189,
+    "y": 3223,
+    "width": 130,
+    "height": 29
+   },
+   "children": [],
+   "fills": [
+    {
+     "type": "SOLID",
+     "color": "#0F172A"
+    }
+   ],
+   "characters": "Por Vencer",
+   "style": {
+    "fontSize": 24,
+    "fontWeight": 700,
+    "fontFamily": "Inter"
+   }
+  },
+  {
+   "id": "534-592:2",
+   "name": "Revisa y marca según lo que vendas o retires",
+   "type": "TEXT",
+   "absoluteBoundingBox": {
+    "x": 8184,
+    "y": 3253,
+    "width": 302,
+    "height": 17
+   },
+   "children": [],
+   "fills": [
+    {
+     "type": "SOLID",
+     "color": "#64748B"
+    }
+   ],
+   "characters": "Revisa y marca según lo que vendas o retires",
+   "style": {
+    "fontSize": 14,
+    "fontWeight": 400,
+    "fontFamily": "Inter"
+   }
+  },
+  {
+   "id": "534-592:3",
+   "name": "Rectangle 18",
+   "type": "RECTANGLE",
+   "absoluteBoundingBox": {
+    "x": 8453,
+    "y": 3227,
+    "width": 80,
+    "height": 26
+   },
+   "children": [],
+   "fills": [
+    {
+     "type": "SOLID",
+     "color": "#FEE2E2"
+    }
+   ],
+   "cornerRadius": 15.0
+  },
+  {
+   "id": "534-592:4",
+   "name": "4 críticos",
+   "type": "TEXT",
+   "absoluteBoundingBox": {
+    "x": 8459,
+    "y": 3231,
+    "width": 68,
+    "height": 17
+   },
+   "children": [],
+   "fills": [
+    {
+     "type": "SOLID",
+     "color": "#B91C1C"
+    }
+   ],
+   "characters": "4 críticos",
+   "style": {
+    "fontSize": 14,
+    "fontWeight": 700,
+    "fontFamily": "Inter"
+   }
+  },
+  {
+   "id": "534-592:5",
+   "name": "Rectangle 19",
+   "type": "RECTANGLE",
+   "absoluteBoundingBox": {
+    "x": 8189,
+    "y": 3307,
+    "width": 332,
+    "height": 41
+   },
+   "children": [],
+   "fills": [
+    {
+     "type": "SOLID",
+     "color": "#E2E8F0"
+    }
+   ],
+   "cornerRadius": 13.0
+  },
+  {
+   "id": "534-592:6",
+   "name": "60 días",
+   "type": "TEXT",
+   "absoluteBoundingBox": {
+    "x": 8429,
+    "y": 3319,
+    "width": 49,
+    "height": 17
+   },
+   "children": [],
+   "fills": [
+    {
+     "type": "SOLID",
+     "color": "#64748B"
+    }
+   ],
+   "characters": "60 días",
+   "style": {
+    "fontSize": 14,
+    "fontWeight": 400,
+    "fontFamily": "Inter"
+   }
+  },
+  {
+   "id": "534-592:7",
+   "name": "30 días",
+   "type": "TEXT",
+   "absoluteBoundingBox": {
+    "x": 8320,
+    "y": 3319,
+    "width": 49,
+    "height": 17
+   },
+   "children": [],
+   "fills": [
+    {
+     "type": "SOLID",
+     "color": "#64748B"
+    }
+   ],
+   "characters": "30 días",
+   "style": {
+    "fontSize": 14,
+    "fontWeight": 400,
+    "fontFamily": "Inter"
+   }
+  },
+  {
+   "id": "534-592:8",
+   "name": "Rectangle 20",
+   "type": "VECTOR",
+   "absoluteBoundingBox": {
+    "x": 8196,
+    "y": 3311,
+    "width": 103,
+    "height": 33
+   },
+   "children": [],
+   "fills": [
+    {
+     "type": "SOLID",
+     "color": "#FFFFFF"
+    }
+   ],
+   "cornerRadius": 13.0
+  },
+  {
+   "id": "534-592:9",
+   "name": "15 días",
+   "type": "TEXT",
+   "absoluteBoundingBox": {
+    "x": 8217,
+    "y": 3319,
+    "width": 52,
+    "height": 17
+   },
+   "children": [],
+   "fills": [
+    {
+     "type": "SOLID",
+     "color": "#1B5E7B"
+    }
+   ],
+   "characters": "15 días",
+   "style": {
+    "fontSize": 14,
+    "fontWeight": 700,
+    "fontFamily": "Inter"
+   }
+  },
+  {
+   "id": "534-592:10",
+   "name": "Rectangle 21",
+   "type": "RECTANGLE",
+   "absoluteBoundingBox": {
+    "x": 8193,
+    "y": 3361,
+    "width": 335,
+    "height": 35
+   },
+   "children": [],
+   "fills": [
+    {
+     "type": "SOLID",
+     "color": "#262626"
+    }
+   ],
+   "cornerRadius": 15.0
+  },
+  {
+   "id": "534-592:11",
+   "name": "DESHACER",
+   "type": "TEXT",
+   "absoluteBoundingBox": {
+    "x": 8436,
+    "y": 3371,
+    "width": 80,
+    "height": 17
+   },
+   "children": [],
+   "fills": [
+    {
+     "type": "SOLID",
+     "color": "#FFFFFF"
+    }
+   ],
+   "characters": "DESHACER",
+   "style": {
+    "fontSize": 14,
+    "fontWeight": 700,
+    "fontFamily": "Inter"
+   }
+  },
+  {
+   "id": "534-592:12",
+   "name": "Listo, quitado de la lista",
+   "type": "TEXT",
+   "absoluteBoundingBox": {
+    "x": 8226,
+    "y": 3370,
+    "width": 210,
+    "height": 46
+   },
+   "children": [],
+   "fills": [
+    {
+     "type": "SOLID",
+     "color": "#FFFFFF"
+    }
+   ],
+   "characters": "Listo, quitado de la lista",
+   "style": {
+    "fontSize": 14,
+    "fontWeight": 400,
+    "fontFamily": "Inter"
+   }
+  },
+  {
+   "id": "534-592:13",
+   "name": "Group 10",
+   "type": "GROUP",
+   "absoluteBoundingBox": {
+    "x": 8193,
+    "y": 3454,
+    "width": 335,
+    "height": 113
+   },
+   "children": [
+    {
+     "id": "534-592:14",
+     "name": "Rectangle 22",
+     "type": "VECTOR",
+     "absoluteBoundingBox": {
+      "x": 8193,
+      "y": 3454,
+      "width": 335,
+      "height": 113
+     },
+     "children": [],
+     "fills": [
+      {
+       "type": "SOLID",
+       "color": "#FFFFFF"
+      }
+     ],
+     "strokes": [
+      {
+       "type": "SOLID",
+       "color": "#E2E8F0"
+      }
+     ],
+     "cornerRadius": 13.0
+    },
+    {
+     "id": "534-592:15",
+     "name": "Lote IB-449 · Comprimidos caja",
+     "type": "TEXT",
+     "absoluteBoundingBox": {
+      "x": 8202,
+      "y": 3518,
+      "width": 213,
+      "height": 28
+     },
+     "children": [],
+     "fills": [
+      {
+       "type": "SOLID",
+       "color": "#5F6B7A"
+      }
+     ],
+     "characters": "Lote IB-449 · Comprimidos caja",
+     "style": {
+      "fontSize": 13,
+      "fontWeight": 400,
+      "fontFamily": "Inter"
+     }
+    },
+    {
+     "id": "534-592:16",
+     "name": "Cantidad: 5 unidades",
+     "type": "TEXT",
+     "absoluteBoundingBox": {
+      "x": 8206,
+      "y": 3537,
+      "width": 146,
+      "height": 17
+     },
+     "children": [],
+     "fills": [
+      {
+       "type": "SOLID",
+       "color": "#1A1D21"
+      }
+     ],
+     "characters": "Cantidad: 5 unidades",
+     "style": {
+      "fontSize": 14,
+      "fontWeight": 700,
+      "fontFamily": "Inter"
+     }
+    },
+    {
+     "id": "534-592:17",
+     "name": "Ibuprofeno 400 mg",
+     "type": "TEXT",
+     "absoluteBoundingBox": {
+      "x": 8202,
+      "y": 3497,
+      "width": 155,
+      "height": 19
+     },
+     "children": [],
+     "fills": [
+      {
+       "type": "SOLID",
+       "color": "#1A1D21"
+      }
+     ],
+     "characters": "Ibuprofeno 400 mg",
+     "style": {
+      "fontSize": 16,
+      "fontWeight": 700,
+      "fontFamily": "Inter"
+     }
+    },
+    {
+     "id": "534-592:18",
+     "name": "Rectangle 23",
+     "type": "RECTANGLE",
+     "absoluteBoundingBox": {
+      "x": 8206,
+      "y": 3465,
+      "width": 133,
+      "height": 26
+     },
+     "children": [],
+     "fills": [
+      {
+       "type": "SOLID",
+       "color": "#FEE2E2"
+      }
+     ],
+     "cornerRadius": 15.0
+    },
+    {
+     "id": "534-592:19",
+     "name": "Ellipse 7",
+     "type": "ELLIPSE",
+     "absoluteBoundingBox": {
+      "x": 8211,
+      "y": 3470,
+      "width": 15,
+      "height": 15
+     },
+     "children": [],
+     "fills": [
+      {
+       "type": "SOLID",
+       "color": "#FFFFFF"
+      }
+     ]
+    },
+    {
+     "id": "534-592:20",
+     "name": "!",
+     "type": "TEXT",
+     "absoluteBoundingBox": {
+      "x": 8216,
+      "y": 3469,
+      "width": 4,
+      "height": 15
+     },
+     "children": [],
+     "fills": [
+      {
+       "type": "SOLID",
+       "color": "#B91C1C"
+      }
+     ],
+     "characters": "!",
+     "style": {
+      "fontSize": 12,
+      "fontWeight": 700,
+      "fontFamily": "Inter"
+     }
+    },
+    {
+     "id": "534-592:21",
+     "name": "Vence en 15 días",
+     "type": "TEXT",
+     "absoluteBoundingBox": {
+      "x": 8230,
+      "y": 3470,
+      "width": 115,
+      "height": 25
+     },
+     "children": [],
+     "fills": [
+      {
+       "type": "SOLID",
+       "color": "#B91C1C"
+      }
+     ],
+     "characters": "Vence en 15 días",
+     "style": {
+      "fontSize": 12,
+      "fontWeight": 700,
+      "fontFamily": "Inter"
+     }
+    },
+    {
+     "id": "534-592:22",
+     "name": "Rectangle 24",
+     "type": "VECTOR",
+     "absoluteBoundingBox": {
+      "x": 8426,
+      "y": 3469,
+      "width": 91,
+      "height": 33
+     },
+     "children": [],
+     "fills": [
+      {
+       "type": "SOLID",
+       "color": "#1B5E7B"
+      }
+     ],
+     "cornerRadius": 15.0
+    },
+    {
+     "id": "534-592:23",
+     "name": "Rectangle 25",
+     "type": "VECTOR",
+     "absoluteBoundingBox": {
+      "x": 8426,
+      "y": 3517,
+      "width": 91,
+      "height": 33
+     },
+     "children": [],
+     "fills": [
+      {
+       "type": "SOLID",
+       "color": "#F3F4F6"
+      }
+     ],
+     "cornerRadius": 15.0
+    },
+    {
+     "id": "534-592:24",
+     "name": "✓ Vender",
+     "type": "TEXT",
+     "absoluteBoundingBox": {
+      "x": 8437,
+      "y": 3477,
+      "width": 66,
+      "height": 17
+     },
+     "children": [],
+     "fills": [
+      {
+       "type": "SOLID",
+       "color": "#FFFFFF"
+      }
+     ],
+     "characters": "✓ Vender",
+     "style": {
+      "fontSize": 14,
+      "fontWeight": 700,
+      "fontFamily": "Inter"
+     }
+    },
+    {
+     "id": "534-592:25",
+     "name": "✓",
+     "type": "TEXT",
+     "absoluteBoundingBox": {
+      "x": 8202,
+      "y": 3405,
+      "width": 13,
+      "height": 17
+     },
+     "children": [],
+     "fills": [
+      {
+       "type": "SOLID",
+       "color": "#FFFFFF"
+      }
+     ],
+     "characters": "✓",
+     "style": {
+      "fontSize": 14,
+      "fontWeight": 700,
+      "fontFamily": "Inter"
+     }
+    },
+    {
+     "id": "534-592:26",
+     "name": "x Descartar",
+     "type": "TEXT",
+     "absoluteBoundingBox": {
+      "x": 8432,
+      "y": 3525,
+      "width": 80,
+      "height": 17
+     },
+     "children": [],
+     "fills": [
+      {
+       "type": "SOLID",
+       "color": "#4B5563"
+      }
+     ],
+     "characters": "x Descartar",
+     "style": {
+      "fontSize": 14,
+      "fontWeight": 700,
+      "fontFamily": "Inter"
+     }
+    }
+   ]
+  },
+  {
+   "id": "534-592:27",
+   "name": "Group 11",
+   "type": "GROUP",
+   "absoluteBoundingBox": {
+    "x": 8194,
+    "y": 3580,
+    "width": 335,
+    "height": 113
+   },
+   "children": [
+    {
+     "id": "534-592:28",
+     "name": "Rectangle 22",
+     "type": "VECTOR",
+     "absoluteBoundingBox": {
+      "x": 8194,
+      "y": 3580,
+      "width": 335,
+      "height": 113
+     },
+     "children": [],
+     "fills": [
+      {
+       "type": "SOLID",
+       "color": "#FFFFFF"
+      }
+     ],
+     "strokes": [
+      {
+       "type": "SOLID",
+       "color": "#E2E8F0"
+      }
+     ],
+     "cornerRadius": 13.0
+    },
+    {
+     "id": "534-592:29",
+     "name": "Lote P-500 · Jarabe infantil",
+     "type": "TEXT",
+     "absoluteBoundingBox": {
+      "x": 8197,
+      "y": 3645,
+      "width": 213,
+      "height": 28
+     },
+     "children": [],
+     "fills": [
+      {
+       "type": "SOLID",
+       "color": "#5F6B7A"
+      }
+     ],
+     "characters": "Lote P-500 · Jarabe infantil",
+     "style": {
+      "fontSize": 13,
+      "fontWeight": 400,
+      "fontFamily": "Inter"
+     }
+    },
+    {
+     "id": "534-592:30",
+     "name": "Cantidad: 3 frascos",
+     "type": "TEXT",
+     "absoluteBoundingBox": {
+      "x": 8202,
+      "y": 3664,
+      "width": 134,
+      "height": 17
+     },
+     "children": [],
+     "fills": [
+      {
+       "type": "SOLID",
+       "color": "#1A1D21"
+      }
+     ],
+     "characters": "Cantidad: 3 frascos",
+     "style": {
+      "fontSize": 14,
+      "fontWeight": 700,
+      "fontFamily": "Inter"
+     }
+    },
+    {
+     "id": "534-592:31",
+     "name": "Paracetamol 500 mg",
+     "type": "TEXT",
+     "absoluteBoundingBox": {
+      "x": 8194,
+      "y": 3624,
+      "width": 167,
+      "height": 19
+     },
+     "children": [],
+     "fills": [
+      {
+       "type": "SOLID",
+       "color": "#1A1D21"
+      }
+     ],
+     "characters": "Paracetamol 500 mg",
+     "style": {
+      "fontSize": 16,
+      "fontWeight": 700,
+      "fontFamily": "Inter"
+     }
+    },
+    {
+     "id": "534-592:32",
+     "name": "Rectangle 23",
+     "type": "RECTANGLE",
+     "absoluteBoundingBox": {
+      "x": 8207,
+      "y": 3590,
+      "width": 133,
+      "height": 26
+     },
+     "children": [],
+     "fills": [
+      {
+       "type": "SOLID",
+       "color": "#FEE2E2"
+      }
+     ],
+     "cornerRadius": 15.0
+    },
+    {
+     "id": "534-592:33",
+     "name": "Ellipse 7",
+     "type": "ELLIPSE",
+     "absoluteBoundingBox": {
+      "x": 8212,
+      "y": 3595,
+      "width": 15,
+      "height": 15
+     },
+     "children": [],
+     "fills": [
+      {
+       "type": "SOLID",
+       "color": "#FFFFFF"
+      }
+     ]
+    },
+    {
+     "id": "534-592:34",
+     "name": "!",
+     "type": "TEXT",
+     "absoluteBoundingBox": {
+      "x": 8217,
+      "y": 3595,
+      "width": 4,
+      "height": 15
+     },
+     "children": [],
+     "fills": [
+      {
+       "type": "SOLID",
+       "color": "#B91C1C"
+      }
+     ],
+     "characters": "!",
+     "style": {
+      "fontSize": 12,
+      "fontWeight": 700,
+      "fontFamily": "Inter"
+     }
+    },
+    {
+     "id": "534-592:35",
+     "name": "Vence en 12 días",
+     "type": "TEXT",
+     "absoluteBoundingBox": {
+      "x": 8231,
+      "y": 3595,
+      "width": 115,
+      "height": 25
+     },
+     "children": [],
+     "fills": [
+      {
+       "type": "SOLID",
+       "color": "#B91C1C"
+      }
+     ],
+     "characters": "Vence en 12 días",
+     "style": {
+      "fontSize": 12,
+      "fontWeight": 700,
+      "fontFamily": "Inter"
+     }
+    },
+    {
+     "id": "534-592:36",
+     "name": "Rectangle 24",
+     "type": "VECTOR",
+     "absoluteBoundingBox": {
+      "x": 8426,
+      "y": 3595,
+      "width": 91,
+      "height": 33
+     },
+     "children": [],
+     "fills": [
+      {
+       "type": "SOLID",
+       "color": "#1B5E7B"
+      }
+     ],
+     "strokes": [
+      {
+       "type": "SOLID",
+       "color": "#D1D5DB"
+      }
+     ],
+     "cornerRadius": 15.0
+    },
+    {
+     "id": "534-592:37",
+     "name": "Rectangle 25",
+     "type": "VECTOR",
+     "absoluteBoundingBox": {
+      "x": 8426,
+      "y": 3643,
+      "width": 91,
+      "height": 33
+     },
+     "children": [],
+     "fills": [
+      {
+       "type": "SOLID",
+       "color": "#F3F4F6"
+      }
+     ],
+     "strokes": [
+      {
+       "type": "SOLID",
+       "color": "#D1D5DB"
+      }
+     ],
+     "cornerRadius": 15.0
+    },
+    {
+     "id": "534-592:38",
+     "name": "✓ Vender",
+     "type": "TEXT",
+     "absoluteBoundingBox": {
+      "x": 8437,
+      "y": 3603,
+      "width": 66,
+      "height": 17
+     },
+     "children": [],
+     "fills": [
+      {
+       "type": "SOLID",
+       "color": "#FFFFFF"
+      }
+     ],
+     "characters": "✓ Vender",
+     "style": {
+      "fontSize": 14,
+      "fontWeight": 700,
+      "fontFamily": "Inter"
+     }
+    },
+    {
+     "id": "534-592:39",
+     "name": "x Descartar",
+     "type": "TEXT",
+     "absoluteBoundingBox": {
+      "x": 8432,
+      "y": 3650,
+      "width": 80,
+      "height": 17
+     },
+     "children": [],
+     "fills": [
+      {
+       "type": "SOLID",
+       "color": "#4B5563"
+      }
+     ],
+     "characters": "x Descartar",
+     "style": {
+      "fontSize": 14,
+      "fontWeight": 700,
+      "fontFamily": "Inter"
+     }
+    }
+   ]
+  },
+  {
+   "id": "534-592:40",
+   "name": "Group 15",
+   "type": "GROUP",
+   "absoluteBoundingBox": {
+    "x": 8193,
+    "y": 3706,
+    "width": 335,
+    "height": 113
+   },
+   "children": [
+    {
+     "id": "534-592:41",
+     "name": "Group 12",
+     "type": "GROUP",
+     "absoluteBoundingBox": {
+      "x": 8193,
+      "y": 3706,
+      "width": 335,
+      "height": 113
+     },
+     "children": [
+      {
+       "id": "534-592:42",
+       "name": "Rectangle 22",
+       "type": "VECTOR",
+       "absoluteBoundingBox": {
+        "x": 8193,
+        "y": 3706,
+        "width": 335,
+        "height": 113
+       },
+       "children": [],
+       "fills": [
+        {
+         "type": "SOLID",
+         "color": "#FFFFFF"
+        }
+       ],
+       "strokes": [
+        {
+         "type": "SOLID",
+         "color": "#E2E8F0"
+        }
+       ],
+       "cornerRadius": 13.0
+      },
+      {
+       "id": "534-592:43",
+       "name": "Lote AMX-12 · Suspensión 60 m",
+       "type": "TEXT",
+       "absoluteBoundingBox": {
+        "x": 8196,
+        "y": 3771,
+        "width": 213,
+        "height": 28
+       },
+       "children": [],
+       "fills": [
+        {
+         "type": "SOLID",
+         "color": "#5F6B7A"
+        }
+       ],
+       "characters": "Lote AMX-12 · Suspensión 60 m",
+       "style": {
+        "fontSize": 13,
+        "fontWeight": 400,
+        "fontFamily": "Inter"
+       }
+      },
+      {
+       "id": "534-592:44",
+       "name": "Cantidad: 2 frascos",
+       "type": "TEXT",
+       "absoluteBoundingBox": {
+        "x": 8201,
+        "y": 3790,
+        "width": 134,
+        "height": 17
+       },
+       "children": [],
+       "fills": [
+        {
+         "type": "SOLID",
+         "color": "#1A1D21"
+        }
+       ],
+       "characters": "Cantidad: 2 frascos",
+       "style": {
+        "fontSize": 14,
+        "fontWeight": 700,
+        "fontFamily": "Inter"
+       }
+      },
+      {
+       "id": "534-592:45",
+       "name": "Amoxicilina 250 mg",
+       "type": "TEXT",
+       "absoluteBoundingBox": {
+        "x": 8193,
+        "y": 3750,
+        "width": 159,
+        "height": 19
+       },
+       "children": [],
+       "fills": [
+        {
+         "type": "SOLID",
+         "color": "#1A1D21"
+        }
+       ],
+       "characters": "Amoxicilina 250 mg",
+       "style": {
+        "fontSize": 16,
+        "fontWeight": 700,
+        "fontFamily": "Inter"
+       }
+      },
+      {
+       "id": "534-592:46",
+       "name": "Rectangle 23",
+       "type": "RECTANGLE",
+       "absoluteBoundingBox": {
+        "x": 8206,
+        "y": 3716,
+        "width": 133,
+        "height": 26
+       },
+       "children": [],
+       "fills": [
+        {
+         "type": "SOLID",
+         "color": "#FEE2E2"
+        }
+       ],
+       "cornerRadius": 15.0
+      },
+      {
+       "id": "534-592:47",
+       "name": "Ellipse 7",
+       "type": "ELLIPSE",
+       "absoluteBoundingBox": {
+        "x": 8211,
+        "y": 3721,
+        "width": 15,
+        "height": 15
+       },
+       "children": [],
+       "fills": [
+        {
+         "type": "SOLID",
+         "color": "#FFFFFF"
+        }
+       ]
+      },
+      {
+       "id": "534-592:48",
+       "name": "!",
+       "type": "TEXT",
+       "absoluteBoundingBox": {
+        "x": 8216,
+        "y": 3721,
+        "width": 4,
+        "height": 15
+       },
+       "children": [],
+       "fills": [
+        {
+         "type": "SOLID",
+         "color": "#B91C1C"
+        }
+       ],
+       "characters": "!",
+       "style": {
+        "fontSize": 12,
+        "fontWeight": 700,
+        "fontFamily": "Inter"
+       }
+      },
+      {
+       "id": "534-592:49",
+       "name": "Vence en 8 días",
+       "type": "TEXT",
+       "absoluteBoundingBox": {
+        "x": 8230,
+        "y": 3721,
+        "width": 115,
+        "height": 25
+       },
+       "children": [],
+       "fills": [
+        {
+         "type": "SOLID",
+         "color": "#B91C1C"
+        }
+       ],
+       "characters": "Vence en 8 días",
+       "style": {
+        "fontSize": 12,
+        "fontWeight": 700,
+        "fontFamily": "Inter"
+       }
+      },
+      {
+       "id": "534-592:50",
+       "name": "Rectangle 24",
+       "type": "VECTOR",
+       "absoluteBoundingBox": {
+        "x": 8425,
+        "y": 3721,
+        "width": 91,
+        "height": 33
+       },
+       "children": [],
+       "fills": [
+        {
+         "type": "SOLID",
+         "color": "#1B5E7B"
+        }
+       ],
+       "cornerRadius": 15.0
+      },
+      {
+       "id": "534-592:51",
+       "name": "Rectangle 25",
+       "type": "VECTOR",
+       "absoluteBoundingBox": {
+        "x": 8425,
+        "y": 3769,
+        "width": 91,
+        "height": 33
+       },
+       "children": [],
+       "fills": [
+        {
+         "type": "SOLID",
+         "color": "#F3F4F6"
+        }
+       ],
+       "cornerRadius": 15.0
+      },
+      {
+       "id": "534-592:52",
+       "name": "✓ Vender",
+       "type": "TEXT",
+       "absoluteBoundingBox": {
+        "x": 8436,
+        "y": 3729,
+        "width": 66,
+        "height": 17
+       },
+       "children": [],
+       "fills": [
+        {
+         "type": "SOLID",
+         "color": "#FFFFFF"
+        }
+       ],
+       "characters": "✓ Vender",
+       "style": {
+        "fontSize": 14,
+        "fontWeight": 700,
+        "fontFamily": "Inter"
+       }
+      },
+      {
+       "id": "534-592:53",
+       "name": "x Descartar",
+       "type": "TEXT",
+       "absoluteBoundingBox": {
+        "x": 8431,
+        "y": 3776,
+        "width": 80,
+        "height": 17
+       },
+       "children": [],
+       "fills": [
+        {
+         "type": "SOLID",
+         "color": "#4B5563"
+        }
+       ],
+       "characters": "x Descartar",
+       "style": {
+        "fontSize": 14,
+        "fontWeight": 700,
+        "fontFamily": "Inter"
+       }
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "534-592:54",
+   "name": "Ellipse 7",
+   "type": "ELLIPSE",
+   "absoluteBoundingBox": {
+    "x": 8200,
+    "y": 3371,
+    "width": 15,
+    "height": 15
+   },
+   "children": [],
+   "fills": [
+    {
+     "type": "SOLID",
+     "color": "#FFFFFF"
+    }
+   ]
+  },
+  {
+   "id": "534-592:55",
+   "name": "✓",
+   "type": "TEXT",
+   "absoluteBoundingBox": {
+    "x": 8201,
+    "y": 3369,
+    "width": 13,
+    "height": 17
+   },
+   "children": [],
+   "fills": [
+    {
+     "type": "SOLID",
+     "color": "#000000"
+    }
+   ],
+   "characters": "✓",
+   "style": {
+    "fontSize": 14,
+    "fontWeight": 700,
+    "fontFamily": "Inter"
+   }
+  },
+  {
+   "id": "534-592:56",
+   "name": "Vector",
+   "type": "VECTOR",
+   "absoluteBoundingBox": {
+    "x": 8168,
+    "y": 3840,
+    "width": 390,
+    "height": 0
+   },
+   "children": [],
+   "strokes": [
+    {
+     "type": "SOLID",
+     "color": "#E5E5E5"
+    }
+   ]
+  },
+  {
+   "id": "534-592:57",
+   "name": "Group 16",
+   "type": "GROUP",
+   "absoluteBoundingBox": {
+    "x": 8193,
+    "y": 3830,
+    "width": 335,
+    "height": 113
+   },
+   "children": [
+    {
+     "id": "534-592:58",
+     "name": "Group 12",
+     "type": "GROUP",
+     "absoluteBoundingBox": {
+      "x": 8193,
+      "y": 3830,
+      "width": 335,
+      "height": 113
+     },
+     "children": [
+      {
+       "id": "534-592:59",
+       "name": "Rectangle 22",
+       "type": "VECTOR",
+       "absoluteBoundingBox": {
+        "x": 8193,
+        "y": 3830,
+        "width": 335,
+        "height": 113
+       },
+       "children": [],
+       "fills": [
+        {
+         "type": "SOLID",
+         "color": "#FFFFFF"
+        }
+       ],
+       "strokes": [
+        {
+         "type": "SOLID",
+         "color": "#E2E8F0"
+        }
+       ],
+       "cornerRadius": 13.0
+      },
+      {
+       "id": "534-592:60",
+       "name": "Cantidad: 2 frascos",
+       "type": "TEXT",
+       "absoluteBoundingBox": {
+        "x": 8201,
+        "y": 3914,
+        "width": 134,
+        "height": 17
+       },
+       "children": [],
+       "fills": [
+        {
+         "type": "SOLID",
+         "color": "#171717"
+        }
+       ],
+       "strokes": [
+        {
+         "type": "SOLID",
+         "color": "#E2E8F0"
+        }
+       ],
+       "characters": "Cantidad: 2 frascos",
+       "style": {
+        "fontSize": 14,
+        "fontWeight": 700,
+        "fontFamily": "Inter"
+       }
+      },
+      {
+       "id": "534-592:61",
+       "name": "Rectangle 23",
+       "type": "RECTANGLE",
+       "absoluteBoundingBox": {
+        "x": 8206,
+        "y": 3840,
+        "width": 133,
+        "height": 26
+       },
+       "children": [],
+       "fills": [
+        {
+         "type": "SOLID",
+         "color": "#FEE2E2"
+        }
+       ],
+       "strokes": [
+        {
+         "type": "SOLID",
+         "color": "#E2E8F0"
+        }
+       ],
+       "cornerRadius": 15.0
+      },
+      {
+       "id": "534-592:62",
+       "name": "Rectangle 24",
+       "type": "VECTOR",
+       "absoluteBoundingBox": {
+        "x": 8425,
+        "y": 3840,
+        "width": 91,
+        "height": 33
+       },
+       "children": [],
+       "fills": [
+        {
+         "type": "SOLID",
+         "color": "#1B5E7B"
+        }
+       ],
+       "strokes": [
+        {
+         "type": "SOLID",
+         "color": "#E2E8F0"
+        }
+       ],
+       "cornerRadius": 15.0
+      },
+      {
+       "id": "534-592:63",
+       "name": "x Descartar",
+       "type": "TEXT",
+       "absoluteBoundingBox": {
+        "x": 8431,
+        "y": 3900,
+        "width": 80,
+        "height": 17
+       },
+       "children": [],
+       "fills": [
+        {
+         "type": "SOLID",
+         "color": "#4B5563"
+        }
+       ],
+       "strokes": [
+        {
+         "type": "SOLID",
+         "color": "#E2E8F0"
+        }
+       ],
+       "characters": "x Descartar",
+       "style": {
+        "fontSize": 14,
+        "fontWeight": 700,
+        "fontFamily": "Inter"
+       }
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "534-592:64",
+   "name": "Rectangle 27",
+   "type": "RECTANGLE",
+   "absoluteBoundingBox": {
+    "x": 8168,
+    "y": 3808,
+    "width": 390,
+    "height": 77
+   },
+   "children": [],
+   "fills": [
+    {
+     "type": "SOLID",
+     "color": "#FFFFFF"
+    }
+   ]
+  },
+  {
+   "id": "534-592:65",
+   "name": "Rectangle 26",
+   "type": "RECTANGLE",
+   "absoluteBoundingBox": {
+    "x": 8184,
+    "y": 3829,
+    "width": 354,
+    "height": 36
+   },
+   "children": [],
+   "fills": [
+    {
+     "type": "SOLID",
+     "color": "#E0F2F7"
+    }
+   ],
+   "cornerRadius": 15.0
+  },
+  {
+   "id": "534-592:66",
+   "name": "↺ Ver historial completo de productos retirados",
+   "type": "TEXT",
+   "absoluteBoundingBox": {
+    "x": 8193,
+    "y": 3838,
+    "width": 358,
+    "height": 18
+   },
+   "children": [],
+   "fills": [
+    {
+     "type": "SOLID",
+     "color": "#0E3A4D"
+    }
+   ],
+   "characters": "↺ Ver historial completo de productos retirados",
+   "style": {
+    "fontSize": 15,
+    "fontWeight": 400,
+    "fontFamily": "Inter"
+   }
+  },
+  {
+   "id": "534-592:67",
+   "name": "Vector",
+   "type": "VECTOR",
+   "absoluteBoundingBox": {
+    "x": 8168,
+    "y": 3808,
+    "width": 390,
+    "height": 0
+   },
+   "children": [],
+   "strokes": [
+    {
+     "type": "SOLID",
+     "color": "#E5E5E5"
+    }
+   ]
+  },
+  {
+   "id": "534-592:68",
+   "name": "Vector",
+   "type": "VECTOR",
+   "absoluteBoundingBox": {
+    "x": 8168,
+    "y": 3878,
+    "width": 390,
+    "height": 0
+   },
+   "children": [],
+   "strokes": [
+    {
+     "type": "SOLID",
+     "color": "#E5E5E5"
+    }
+   ]
+  },
+  {
+   "id": "534-592:69",
+   "name": "Vector",
+   "type": "VECTOR",
+   "absoluteBoundingBox": {
+    "x": 8168,
+    "y": 3878,
+    "width": 390,
+    "height": 91
+   },
+   "children": [],
+   "fills": [
+    {
+     "type": "SOLID",
+     "color": "#FFFFFF"
+    }
+   ]
+  },
+  {
+   "id": "534-592:70",
+   "name": "Vector",
+   "type": "VECTOR",
+   "absoluteBoundingBox": {
+    "x": 8248,
+    "y": 3878,
+    "width": 35,
+    "height": 3
+   },
+   "children": [],
+   "fills": [
+    {
+     "type": "SOLID",
+     "color": "#1B5E7B"
+    }
+   ]
+  },
+  {
+   "id": "534-592:71",
+   "name": "Vector",
+   "type": "VECTOR",
+   "absoluteBoundingBox": {
+    "x": 8252,
+    "y": 3898,
+    "width": 26,
+    "height": 22
+   },
+   "children": [],
+   "strokes": [
+    {
+     "type": "SOLID",
+     "color": "#1B5E7B"
+    }
+   ]
+  },
+  {
+   "id": "534-592:72",
+   "name": "Vector",
+   "type": "VECTOR",
+   "absoluteBoundingBox": {
+    "x": 8252,
+    "y": 3905,
+    "width": 26,
+    "height": 0
+   },
+   "children": [],
+   "strokes": [
+    {
+     "type": "SOLID",
+     "color": "#1B5E7B"
+    }
+   ]
+  },
+  {
+   "id": "534-592:73",
+   "name": "Vector",
+   "type": "VECTOR",
+   "absoluteBoundingBox": {
+    "x": 8259,
+    "y": 3895,
+    "width": 0,
+    "height": 5
+   },
+   "children": [],
+   "strokes": [
+    {
+     "type": "SOLID",
+     "color": "#1B5E7B"
+    }
+   ]
+  },
+  {
+   "id": "534-592:74",
+   "name": "Vector",
+   "type": "VECTOR",
+   "absoluteBoundingBox": {
+    "x": 8272,
+    "y": 3895,
+    "width": 0,
+    "height": 5
+   },
+   "children": [],
+   "strokes": [
+    {
+     "type": "SOLID",
+     "color": "#1B5E7B"
+    }
+   ]
+  },
+  {
+   "id": "534-592:75",
+   "name": "Vector",
+   "type": "VECTOR",
+   "absoluteBoundingBox": {
+    "x": 8261,
+    "y": 3909,
+    "width": 9,
+    "height": 7
+   },
+   "children": [],
+   "strokes": [
+    {
+     "type": "SOLID",
+     "color": "#1B5E7B"
+    }
+   ]
+  },
+  {
+   "id": "534-592:76",
+   "name": "Vector",
+   "type": "VECTOR",
+   "absoluteBoundingBox": {
+    "x": 8261,
+    "y": 3909,
+    "width": 9,
+    "height": 7
+   },
+   "children": [],
+   "strokes": [
+    {
+     "type": "SOLID",
+     "color": "#1B5E7B"
+    }
+   ]
+  },
+  {
+   "id": "534-592:77",
+   "name": "Vencimientos",
+   "type": "TEXT",
+   "absoluteBoundingBox": {
+    "x": 8225,
+    "y": 3930,
+    "width": 81,
+    "height": 14
+   },
+   "children": [],
+   "fills": [
+    {
+     "type": "SOLID",
+     "color": "#1B5E7B"
+    }
+   ],
+   "characters": "Vencimientos",
+   "style": {
+    "fontSize": 11,
+    "fontWeight": 700,
+    "fontFamily": "Inter"
+   }
+  },
+  {
+   "id": "534-592:78",
+   "name": "Vector",
+   "type": "VECTOR",
+   "absoluteBoundingBox": {
+    "x": 8449,
+    "y": 3908,
+    "width": 12,
+    "height": 11
+   },
+   "children": [],
+   "fills": [
+    {
+     "type": "SOLID",
+     "color": "#A3A3A3"
+    }
+   ]
+  },
+  {
+   "id": "534-592:79",
+   "name": "Vector",
+   "type": "VECTOR",
+   "absoluteBoundingBox": {
+    "x": 8460,
+    "y": 3908,
+    "width": 12,
+    "height": 11
+   },
+   "children": [],
+   "fills": [
+    {
+     "type": "SOLID",
+     "color": "#A3A3A3"
+    }
+   ]
+  },
+  {
+   "id": "534-592:80",
+   "name": "Vector",
+   "type": "VECTOR",
+   "absoluteBoundingBox": {
+    "x": 8455,
+    "y": 3896,
+    "width": 12,
+    "height": 11
+   },
+   "children": [],
+   "fills": [
+    {
+     "type": "SOLID",
+     "color": "#A3A3A3"
+    }
+   ]
+  },
+  {
+   "id": "534-592:81",
+   "name": "Stock",
+   "type": "TEXT",
+   "absoluteBoundingBox": {
+    "x": 8443,
+    "y": 3930,
+    "width": 35,
+    "height": 14
+   },
+   "children": [],
+   "fills": [
+    {
+     "type": "SOLID",
+     "color": "#A3A3A3"
+    }
+   ],
+   "characters": "Stock",
+   "style": {
+    "fontSize": 11,
+    "fontWeight": 700,
+    "fontFamily": "Inter"
+   }
+  },
+  {
+   "id": "534-592:82",
+   "name": "Vector",
+   "type": "VECTOR",
+   "absoluteBoundingBox": {
+    "x": 8320,
+    "y": 3956,
+    "width": 87,
+    "height": 4
+   },
+   "children": [],
+   "fills": [
+    {
+     "type": "SOLID",
+     "color": "#A3A3A3"
+    }
+   ]
+  },
+  {
+   "id": "534-592:83",
+   "name": "TopHeaderSection",
+   "type": "FRAME",
+   "absoluteBoundingBox": {
+    "x": 8168,
+    "y": 3117,
+    "width": 390,
+    "height": 57
+   },
+   "children": [
+    {
+     "id": "534-592:84",
+     "name": "Barra de estado superior de iOS/móvil con hora 20:01, orificio de cámara e iconos de conexión",
+     "type": "FRAME",
+     "absoluteBoundingBox": {
+      "x": 8168,
+      "y": 3117,
+      "width": 390,
+      "height": 40
+     },
+     "children": [
+      {
+       "id": "534-592:85",
+       "name": "Hora actual",
+       "type": "FRAME",
+       "absoluteBoundingBox": {
+        "x": 8196,
+        "y": 3129,
+        "width": 48,
+        "height": 20
+       },
+       "children": [
+        {
+         "id": "534-592:86",
+         "name": "Text",
+         "type": "TEXT",
+         "absoluteBoundingBox": {
+          "x": 8196,
+          "y": 3128,
+          "width": 34,
+          "height": 20
+         },
+         "children": [],
+         "fills": [
+          {
+           "type": "SOLID",
+           "color": "#0F172A"
+          }
+         ],
+         "characters": "20:01",
+         "style": {
+          "fontSize": 13,
+          "fontWeight": 600,
+          "fontFamily": "Plus Jakarta Sans"
+         }
+        }
+       ]
+      },
+      {
+       "id": "534-592:87",
+       "name": "Orificio de cámara / Punch-hole central:margin",
+       "type": "FRAME",
+       "absoluteBoundingBox": {
+        "x": 8244,
+        "y": 3132,
+        "width": 222,
+        "height": 14
+       },
+       "children": [
+        {
+         "id": "534-592:88",
+         "name": "Orificio de cámara / Punch-hole central",
+         "type": "RECTANGLE",
+         "absoluteBoundingBox": {
+          "x": 8348,
+          "y": 3132,
+          "width": 14,
+          "height": 14
+         },
+         "children": [],
+         "fills": [
+          {
+           "type": "SOLID",
+           "color": "#0F172A"
+          }
+         ],
+         "cornerRadius": 9999.0
+        }
+       ]
+      },
+      {
+       "id": "534-592:89",
+       "name": "Iconos de estado de red, wifi y batería",
+       "type": "FRAME",
+       "absoluteBoundingBox": {
+        "x": 8466,
+        "y": 3132,
+        "width": 64,
+        "height": 14
+       },
+       "children": [
+        {
+         "id": "534-592:90",
+         "name": "SVG - Cobertura de red celular",
+         "type": "FRAME",
+         "absoluteBoundingBox": {
+          "x": 8468,
+          "y": 3132,
+          "width": 14,
+          "height": 14
+         },
+         "children": [
+          {
+           "id": "534-592:91",
+           "name": "Vector",
+           "type": "VECTOR",
+           "absoluteBoundingBox": {
+            "x": 8469,
+            "y": 3134,
+            "width": 10,
+            "height": 11
+           },
+           "children": [],
+           "fills": [
+            {
+             "type": "SOLID",
+             "color": "#0F172A"
+            }
+           ]
+          },
+          {
+           "id": "534-592:92",
+           "name": "Vector",
+           "type": "VECTOR",
+           "absoluteBoundingBox": {
+            "x": 8469,
+            "y": 3141,
+            "width": 2,
+            "height": 3
+           },
+           "children": [],
+           "fills": [
+            {
+             "type": "SOLID",
+             "color": "#0F172A"
+            }
+           ]
+          },
+          {
+           "id": "534-592:93",
+           "name": "Vector",
+           "type": "VECTOR",
+           "absoluteBoundingBox": {
+            "x": 8472,
+            "y": 3139,
+            "width": 2,
+            "height": 5
+           },
+           "children": [],
+           "fills": [
+            {
+             "type": "SOLID",
+             "color": "#0F172A"
+            }
+           ]
+          },
+          {
+           "id": "534-592:94",
+           "name": "Vector",
+           "type": "VECTOR",
+           "absoluteBoundingBox": {
+            "x": 8474,
+            "y": 3137,
+            "width": 2,
+            "height": 8
+           },
+           "children": [],
+           "fills": [
+            {
+             "type": "SOLID",
+             "color": "#0F172A"
+            }
+           ]
+          },
+          {
+           "id": "534-592:95",
+           "name": "Vector",
+           "type": "VECTOR",
+           "absoluteBoundingBox": {
+            "x": 8477,
+            "y": 3134,
+            "width": 2,
+            "height": 10
+           },
+           "children": [],
+           "fills": [
+            {
+             "type": "SOLID",
+             "color": "#0F172A"
+            }
+           ]
+          }
+         ]
+        },
+        {
+         "id": "534-592:96",
+         "name": "SVG - Wifi:margin",
+         "type": "FRAME",
+         "absoluteBoundingBox": {
+          "x": 8482,
+          "y": 3132,
+          "width": 20,
+          "height": 14
+         },
+         "children": [
+          {
+           "id": "534-592:97",
+           "name": "SVG - Wifi",
+           "type": "FRAME",
+           "absoluteBoundingBox": {
+            "x": 8488,
+            "y": 3132,
+            "width": 14,
+            "height": 14
+           },
+           "children": [
+            {
+             "id": "534-592:98",
+             "name": "SVG",
+             "type": "FRAME",
+             "absoluteBoundingBox": {
+              "x": 8488,
+              "y": 3132,
+              "width": 14,
+              "height": 14
+             },
+             "children": [
+              {
+               "id": "534-592:99",
+               "name": "Vector",
+               "type": "VECTOR",
+               "absoluteBoundingBox": {
+                "x": 8488,
+                "y": 3134,
+                "width": 14,
+                "height": 10
+               },
+               "children": [],
+               "fills": [
+                {
+                 "type": "SOLID",
+                 "color": "#0F172A"
+                }
+               ]
+              }
+             ]
+            }
+           ]
+          }
+         ]
+        },
+        {
+         "id": "534-592:100",
+         "name": "Batería con borde redondeado y relleno:margin",
+         "type": "FRAME",
+         "absoluteBoundingBox": {
+          "x": 8502,
+          "y": 3134,
+          "width": 28,
+          "height": 10
+         },
+         "children": [
+          {
+           "id": "534-592:101",
+           "name": "Batería con borde redondeado y relleno",
+           "type": "FRAME",
+           "absoluteBoundingBox": {
+            "x": 8508,
+            "y": 3134,
+            "width": 22,
+            "height": 10
+           },
+           "children": [
+            {
+             "id": "534-592:102",
+             "name": "Border",
+             "type": "FRAME",
+             "absoluteBoundingBox": {
+              "x": 8508,
+              "y": 3134,
+              "width": 20,
+              "height": 10
+             },
+             "children": [
+              {
+               "id": "534-592:103",
+               "name": "Background",
+               "type": "RECTANGLE",
+               "absoluteBoundingBox": {
+                "x": 8510,
+                "y": 3136,
+                "width": 16,
+                "height": 6
+               },
+               "children": [],
+               "fills": [
+                {
+                 "type": "SOLID",
+                 "color": "#0F172A"
+                }
+               ]
+              }
+             ],
+             "strokes": [
+              {
+               "type": "SOLID",
+               "color": "#0F172A"
+              }
+             ],
+             "cornerRadius": 2.0
+            },
+            {
+             "id": "534-592:104",
+             "name": "Margin",
+             "type": "FRAME",
+             "absoluteBoundingBox": {
+              "x": 8528,
+              "y": 3137,
+              "width": 2,
+              "height": 4
+             },
+             "children": [
+              {
+               "id": "534-592:105",
+               "name": "Background",
+               "type": "RECTANGLE",
+               "absoluteBoundingBox": {
+                "x": 8528,
+                "y": 3137,
+                "width": 2,
+                "height": 4
+               },
+               "children": [],
+               "fills": [
+                {
+                 "type": "SOLID",
+                 "color": "#0F172A"
+                }
+               ]
+              }
+             ]
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "id": "534-592:106",
+     "name": "Top App Bar exacta con botón atrás, logo Alivia y botón de ajustes",
+     "type": "FRAME",
+     "absoluteBoundingBox": {
+      "x": 8168,
+      "y": 3157,
+      "width": 390,
+      "height": 69
+     },
+     "children": [
+      {
+       "id": "534-592:107",
+       "name": "Button - Volver",
+       "type": "FRAME",
+       "absoluteBoundingBox": {
+        "x": 8184,
+        "y": 3169,
+        "width": 44,
+        "height": 44
+       },
+       "children": [
+        {
+         "id": "534-592:108",
+         "name": "SVG",
+         "type": "FRAME",
+         "absoluteBoundingBox": {
+          "x": 8196,
+          "y": 3181,
+          "width": 20,
+          "height": 20
+         },
+         "children": [
+          {
+           "id": "534-592:109",
+           "name": "Vector",
+           "type": "VECTOR",
+           "absoluteBoundingBox": {
+            "x": 8198,
+            "y": 3185,
+            "width": 15,
+            "height": 12
+           },
+           "children": [],
+           "strokes": [
+            {
+             "type": "SOLID",
+             "color": "#0F172A"
+            }
+           ]
+          }
+         ]
+        }
+       ],
+       "fills": [
+        {
+         "type": "SOLID",
+         "color": "#F8FAFC"
+        }
+       ],
+       "strokes": [
+        {
+         "type": "SOLID",
+         "color": "#E2E8F0"
+        }
+       ],
+       "cornerRadius": 14.0
+      },
+      {
+       "id": "534-592:110",
+       "name": "Container",
+       "type": "FRAME",
+       "absoluteBoundingBox": {
+        "x": 8277,
+        "y": 3169,
+        "width": 172,
+        "height": 44
+       },
+       "children": [
+        {
+         "id": "534-592:111",
+         "name": "Background+Shadow",
+         "type": "FRAME",
+         "absoluteBoundingBox": {
+          "x": 8277,
+          "y": 3169,
+          "width": 44,
+          "height": 44
+         },
+         "children": [
+          {
+           "id": "534-592:112",
+           "name": "SVG",
+           "type": "FRAME",
+           "absoluteBoundingBox": {
+            "x": 8282,
+            "y": 3174,
+            "width": 34,
+            "height": 34
+           },
+           "children": [
+            {
+             "id": "534-592:113",
+             "name": "Vector",
+             "type": "VECTOR",
+             "absoluteBoundingBox": {
+              "x": 8290,
+              "y": 3182,
+              "width": 18,
+              "height": 18
+             },
+             "children": [],
+             "strokes": [
+              {
+               "type": "SOLID",
+               "color": "#FFFFFF"
+              }
+             ]
+            },
+            {
+             "id": "534-592:114",
+             "name": "Vector",
+             "type": "VECTOR",
+             "absoluteBoundingBox": {
+              "x": 8290,
+              "y": 3182,
+              "width": 12,
+              "height": 12
+             },
+             "children": [],
+             "fills": [
+              {
+               "type": "SOLID",
+               "color": "#FFFFFF"
+              }
+             ]
+            },
+            {
+             "id": "534-592:115",
+             "name": "Vector",
+             "type": "VECTOR",
+             "absoluteBoundingBox": {
+              "x": 8296,
+              "y": 3188,
+              "width": 6,
+              "height": 6
+             },
+             "children": [],
+             "strokes": [
+              {
+               "type": "SOLID",
+               "color": "#FFFFFF"
+              }
+             ]
+            }
+           ]
+          }
+         ],
+         "fills": [
+          {
+           "type": "SOLID",
+           "color": "#1B5E7B"
+          }
+         ],
+         "cornerRadius": 14.0
+        },
+        {
+         "id": "534-592:116",
+         "name": "Container",
+         "type": "FRAME",
+         "absoluteBoundingBox": {
+          "x": 8335,
+          "y": 3174,
+          "width": 115,
+          "height": 35
+         },
+         "children": [
+          {
+           "id": "534-592:117",
+           "name": "Container",
+           "type": "FRAME",
+           "absoluteBoundingBox": {
+            "x": 8335,
+            "y": 3174,
+            "width": 115,
+            "height": 18
+           },
+           "children": [
+            {
+             "id": "534-592:118",
+             "name": "Container",
+             "type": "FRAME",
+             "absoluteBoundingBox": {
+              "x": 8335,
+              "y": 3174,
+              "width": 44,
+              "height": 18
+             },
+             "children": [
+              {
+               "id": "534-592:119",
+               "name": "Text",
+               "type": "TEXT",
+               "absoluteBoundingBox": {
+                "x": 8335,
+                "y": 3174,
+                "width": 44,
+                "height": 18
+               },
+               "children": [],
+               "fills": [
+                {
+                 "type": "SOLID",
+                 "color": "#0F172A"
+                }
+               ],
+               "characters": "Alivia",
+               "style": {
+                "fontSize": 18,
+                "fontWeight": 700,
+                "fontFamily": "Plus Jakarta Sans"
+               }
+              }
+             ]
+            },
+            {
+             "id": "534-592:120",
+             "name": "Background",
+             "type": "RECTANGLE",
+             "absoluteBoundingBox": {
+              "x": 8385,
+              "y": 3178,
+              "width": 8,
+              "height": 8
+             },
+             "children": [],
+             "fills": [
+              {
+               "type": "SOLID",
+               "color": "#16A34A"
+              }
+             ],
+             "cornerRadius": 9999.0
+            }
+           ]
+          },
+          {
+           "id": "534-592:121",
+           "name": "Margin",
+           "type": "FRAME",
+           "absoluteBoundingBox": {
+            "x": 8335,
+            "y": 3192,
+            "width": 115,
+            "height": 17
+           },
+           "children": [
+            {
+             "id": "534-592:122",
+             "name": "Container",
+             "type": "FRAME",
+             "absoluteBoundingBox": {
+              "x": 8335,
+              "y": 3194,
+              "width": 115,
+              "height": 15
+             },
+             "children": [
+              {
+               "id": "534-592:123",
+               "name": "Farmacia San Martín",
+               "type": "TEXT",
+               "absoluteBoundingBox": {
+                "x": 8335,
+                "y": 3194,
+                "width": 115,
+                "height": 15
+               },
+               "children": [],
+               "fills": [
+                {
+                 "type": "SOLID",
+                 "color": "#64748B"
+                }
+               ],
+               "characters": "Farmacia San Martín",
+               "style": {
+                "fontSize": 12,
+                "fontWeight": 500,
+                "fontFamily": "Plus Jakarta Sans"
+               }
+              }
+             ]
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "id": "534-592:124",
+       "name": "Button - Ajustes",
+       "type": "FRAME",
+       "absoluteBoundingBox": {
+        "x": 8498,
+        "y": 3169,
+        "width": 44,
+        "height": 44
+       },
+       "children": [
+        {
+         "id": "534-592:125",
+         "name": "SVG",
+         "type": "FRAME",
+         "absoluteBoundingBox": {
+          "x": 8510,
+          "y": 3181,
+          "width": 20,
+          "height": 20
+         },
+         "children": [
+          {
+           "id": "534-592:126",
+           "name": "Vector",
+           "type": "VECTOR",
+           "absoluteBoundingBox": {
+            "x": 8512,
+            "y": 3183,
+            "width": 16,
+            "height": 16
+           },
+           "children": [],
+           "fills": [
+            {
+             "type": "SOLID",
+             "color": "#0F172A"
+            }
+           ]
+          }
+         ]
+        }
+       ],
+       "fills": [
+        {
+         "type": "SOLID",
+         "color": "#F8FAFC"
+        }
+       ],
+       "strokes": [
+        {
+         "type": "SOLID",
+         "color": "#E2E8F0"
+        }
+       ],
+       "cornerRadius": 14.0
+      }
+     ],
+     "fills": [
+      {
+       "type": "SOLID",
+       "color": "#FFFFFF"
+      }
+     ],
+     "strokes": [
+      {
+       "type": "SOLID",
+       "color": "#E2E8F0"
+      }
+     ]
+    }
+   ],
+   "fills": [
+    {
+     "type": "SOLID",
+     "color": "#FFFFFF"
+    }
+   ]
+  },
+  {
+   "id": "534-592:127",
+   "name": "Status",
+   "type": "FRAME",
+   "absoluteBoundingBox": {
+    "x": 8191,
+    "y": 3366,
+    "width": 333,
+    "height": 65
+   },
+   "children": [
+    {
+     "id": "534-592:128",
+     "name": "Container",
+     "type": "FRAME",
+     "absoluteBoundingBox": {
+      "x": 8206,
+      "y": 3377,
+      "width": 303,
+      "height": 33
+     },
+     "children": [
+      {
+       "id": "534-592:129",
+       "name": "Izquierda: Icono RefreshCw en círculo de 32px + Textos",
+       "type": "FRAME",
+       "absoluteBoundingBox": {
+        "x": 8206,
+        "y": 3377,
+        "width": 271,
+        "height": 33
+       },
+       "children": [
+        {
+         "id": "534-592:130",
+         "name": "Overlay+Border",
+         "type": "FRAME",
+         "absoluteBoundingBox": {
+          "x": 8206,
+          "y": 3378,
+          "width": 32,
+          "height": 32
+         },
+         "children": [
+          {
+           "id": "534-592:131",
+           "name": "SVG - Lucide RefreshCw con rotación sutil no exagerada",
+           "type": "FRAME",
+           "absoluteBoundingBox": {
+            "x": 8214,
+            "y": 3386,
+            "width": 16,
+            "height": 16
+           },
+           "children": [
+            {
+             "id": "534-592:132",
+             "name": "Vector",
+             "type": "VECTOR",
+             "absoluteBoundingBox": {
+              "x": 8216,
+              "y": 3388,
+              "width": 12,
+              "height": 6
+             },
+             "children": [],
+             "strokes": [
+              {
+               "type": "SOLID",
+               "color": "#0369A1"
+              }
+             ]
+            },
+            {
+             "id": "534-592:133",
+             "name": "Vector",
+             "type": "VECTOR",
+             "absoluteBoundingBox": {
+              "x": 8225,
+              "y": 3388,
+              "width": 3,
+              "height": 3
+             },
+             "children": [],
+             "strokes": [
+              {
+               "type": "SOLID",
+               "color": "#0369A1"
+              }
+             ]
+            },
+            {
+             "id": "534-592:134",
+             "name": "Vector",
+             "type": "VECTOR",
+             "absoluteBoundingBox": {
+              "x": 8216,
+              "y": 3394,
+              "width": 12,
+              "height": 6
+             },
+             "children": [],
+             "strokes": [
+              {
+               "type": "SOLID",
+               "color": "#0369A1"
+              }
+             ]
+            },
+            {
+             "id": "534-592:135",
+             "name": "Vector",
+             "type": "VECTOR",
+             "absoluteBoundingBox": {
+              "x": 8216,
+              "y": 3396,
+              "width": 3,
+              "height": 3
+             },
+             "children": [],
+             "strokes": [
+              {
+               "type": "SOLID",
+               "color": "#0369A1"
+              }
+             ]
+            }
+           ]
+          }
+         ],
+         "fills": [
+          {
+           "type": "SOLID",
+           "color": "#FFFFFF"
+          }
+         ],
+         "strokes": [
+          {
+           "type": "SOLID",
+           "color": "#7DD3FC"
+          }
+         ],
+         "cornerRadius": 9999.0
+        },
+        {
+         "id": "534-592:136",
+         "name": "Container",
+         "type": "FRAME",
+         "absoluteBoundingBox": {
+          "x": 8250,
+          "y": 3377,
+          "width": 219,
+          "height": 33
+         },
+         "children": [
+          {
+           "id": "534-592:137",
+           "name": "Heading 2",
+           "type": "FRAME",
+           "absoluteBoundingBox": {
+            "x": 8250,
+            "y": 3377,
+            "width": 219,
+            "height": 17
+           },
+           "children": [
+            {
+             "id": "534-592:138",
+             "name": "Sincronizando cambios…",
+             "type": "TEXT",
+             "absoluteBoundingBox": {
+              "x": 8250,
+              "y": 3377,
+              "width": 219,
+              "height": 17
+             },
+             "children": [],
+             "fills": [
+              {
+               "type": "SOLID",
+               "color": "#0369A1"
+              }
+             ],
+             "characters": "Sincronizando cambios…",
+             "style": {
+              "fontSize": 13,
+              "fontWeight": 600,
+              "fontFamily": "Plus Jakarta Sans"
+             }
+            }
+           ]
+          },
+          {
+           "id": "534-592:139",
+           "name": "Container",
+           "type": "FRAME",
+           "absoluteBoundingBox": {
+            "x": 8250,
+            "y": 3396,
+            "width": 219,
+            "height": 14
+           },
+           "children": [
+            {
+             "id": "534-592:140",
+             "name": "Text",
+             "type": "TEXT",
+             "absoluteBoundingBox": {
+              "x": 8250,
+              "y": 3395,
+              "width": 215,
+              "height": 29
+             },
+             "children": [],
+             "fills": [
+              {
+               "type": "SOLID",
+               "color": "#0369A1"
+              }
+             ],
+             "characters": "La conexión volvió, espere mientras se… sincronizan los cambios.",
+             "style": {
+              "fontSize": 12,
+              "fontWeight": 400,
+              "fontFamily": "Plus Jakarta Sans"
+             }
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "id": "534-592:141",
+       "name": "Derecha: Pastilla \"2 de 2",
+       "type": "FRAME",
+       "absoluteBoundingBox": {
+        "x": 8477,
+        "y": 3378,
+        "width": 32,
+        "height": 32
+       },
+       "children": [
+        {
+         "id": "534-592:142",
+         "name": "Button - Cerrar notificación",
+         "type": "FRAME",
+         "absoluteBoundingBox": {
+          "x": 8477,
+          "y": 3378,
+          "width": 32,
+          "height": 32
+         },
+         "children": [
+          {
+           "id": "534-592:143",
+           "name": "SVG",
+           "type": "FRAME",
+           "absoluteBoundingBox": {
+            "x": 8485,
+            "y": 3386,
+            "width": 16,
+            "height": 16
+           },
+           "children": [
+            {
+             "id": "534-592:144",
+             "name": "Vector",
+             "type": "VECTOR",
+             "absoluteBoundingBox": {
+              "x": 8489,
+              "y": 3390,
+              "width": 8,
+              "height": 8
+             },
+             "children": [],
+             "strokes": [
+              {
+               "type": "SOLID",
+               "color": "#0369A1"
+              }
+             ]
+            },
+            {
+             "id": "534-592:145",
+             "name": "Vector",
+             "type": "VECTOR",
+             "absoluteBoundingBox": {
+              "x": 8489,
+              "y": 3390,
+              "width": 8,
+              "height": 8
+             },
+             "children": [],
+             "strokes": [
+              {
+               "type": "SOLID",
+               "color": "#0369A1"
+              }
+             ]
+            }
+           ]
+          }
+         ],
+         "cornerRadius": 9999.0
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "id": "534-592:146",
+     "name": "Línea fina de progreso de 2px debajo del texto:margin",
+     "type": "FRAME",
+     "absoluteBoundingBox": {
+      "x": 8206,
+      "y": 3412,
+      "width": 303,
+      "height": 10
+     },
+     "children": [
+      {
+       "id": "534-592:147",
+       "name": "Línea fina de progreso de 2px debajo del texto",
+       "type": "FRAME",
+       "absoluteBoundingBox": {
+        "x": 8206,
+        "y": 3420,
+        "width": 303,
+        "height": 2
+       },
+       "children": [
+        {
+         "id": "534-592:148",
+         "name": "Horizontal Divider",
+         "type": "RECTANGLE",
+         "absoluteBoundingBox": {
+          "x": 8206,
+          "y": 3420,
+          "width": 227,
+          "height": 2
+         },
+         "children": [],
+         "fills": [
+          {
+           "type": "SOLID",
+           "color": "#0284C7"
+          }
+         ],
+         "cornerRadius": 9999.0
+        }
+       ],
+       "fills": [
+        {
+         "type": "SOLID",
+         "color": "#BAE6FD"
+        }
+       ],
+       "cornerRadius": 9999.0
+      }
+     ]
+    }
+   ],
+   "fills": [
+    {
+     "type": "SOLID",
+     "color": "#E0F2FE"
+    }
+   ],
+   "strokes": [
+    {
+     "type": "SOLID",
+     "color": "#7DD3FC"
+    }
+   ],
+   "cornerRadius": 12.0
+  }
+ ],
+ "fills": [
+  {
+   "type": "SOLID",
+   "color": "#F7F9FB"
+  }
+ ],
+ "cornerRadius": 32.0,
+ "_note": "Snapshot reconstruido del árbol de capas porque la API de Figma devolvió 429."
+}
